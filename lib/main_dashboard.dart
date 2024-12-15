@@ -70,7 +70,7 @@ class MainDashboard extends StatelessWidget {
                     title: 'Translation',
                     description: 'Translate signs to text or speech.',
                     icon: Icons.g_translate,
-                    color: Color(0xFF40E0D0), // Card background color
+                    color: Color(0xFFB2D7F0), // Card background color
                     destination: TranslateSignToTextScreen(),
                   ),
                   _buildFeatureCard(
@@ -78,7 +78,7 @@ class MainDashboard extends StatelessWidget {
                     title: 'Text to Sign',
                     description: 'Convert text into sign animations.',
                     icon: Icons.text_fields,
-                    color: Color(0xFF40E0D0), // Card background color
+                    color: Color(0xFFB2D7F0), // Card background color
                     destination: TranslateSignToTextScreen(),
                   ),
                   _buildFeatureCard(
@@ -86,7 +86,7 @@ class MainDashboard extends StatelessWidget {
                     title: 'Emotion Detection',
                     description: 'Identify sign emotions.',
                     icon: Icons.face,
-                    color: Color(0xFF40E0D0), // Card background color
+                    color: Color(0xFFB2D7F0), // Card background color
                     destination: EmotionDetectionScreen(),
                   ),
                 ],
@@ -112,25 +112,25 @@ class MainDashboard extends StatelessWidget {
               title: 'Learn Sign Language',
               description: 'Master ASL with step-by-step lessons.',
               icon: Icons.school,
-              color: Color(0xFF40E0D0), // Card background color
+              color: Color(0xFFB2D7F0), // Card background color
             ),
             _buildUpcomingFeatureCard(
               title: 'Sign Language Games',
               description: 'Fun games to reinforce learning.',
               icon: Icons.videogame_asset,
-              color: Color(0xFF40E0D0), // Card background color
+              color: Color(0xFFB2D7F0), // Card background color
             ),
             _buildUpcomingFeatureCard(
               title: 'Community Forum',
               description: 'Engage with others learning sign language.',
               icon: Icons.forum,
-              color: Color(0xFF40E0D0), // Card background color
+              color: Color(0xFFB2D7F0), // Card background color
             ),
             _buildUpcomingFeatureCard(
               title: 'Sign Challenges',
               description: 'Take part in daily signing challenges.',
               icon: Icons.emoji_events,
-              color: Color(0xFF40E0D0), // Card background color
+              color: Color(0xFFB2D7F0), // Card background color
             ),
           ],
         ),
@@ -221,7 +221,7 @@ class MainDashboard extends StatelessWidget {
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
       child: Container(
-        color: Color(0xFF40E0D0), // Card background color
+        color: Color(0xFFB2D7F0), // Card background color
         child: Column(
           children: [
             SizedBox(height: 50),
