@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'main_dashboard.dart';
-import 'language_support_page.dart';
 import 'translate_sign_to_text.dart';
 import 'emotion_detection.dart';
 import 'settings_page.dart';// Import the file where the MainDashboard is defined
@@ -27,7 +26,6 @@ class MyApp extends StatelessWidget {
         '/settings': (context) => SettingsPage(),
 
         '/emotionDetection': (context) => EmotionDetectionScreen(),
-        '/languageCustomization': (context) => LanguageSupportPage(),
       },
     );
   }

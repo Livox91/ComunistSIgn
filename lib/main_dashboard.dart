@@ -3,167 +3,207 @@ import 'package:google_fonts/google_fonts.dart';
 import 'settings_page.dart';
 import 'translate_sign_to_text.dart';
 import 'emotion_detection.dart';
+import 'search_page.dart';
+import 'user_account.dart';
+import 'text_to_sign.dart';
 
-class MainDashboard extends StatelessWidget {
-  final String userName = 'Alex Johnson'; // Dummy user name
-
+class MainDashboard extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF), // Updated background color
-      endDrawer: _buildDrawer(context), // Drawer with Settings option
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Color(0xFF0077B6)), // Text color in background
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Section
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Hello again,',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    userName,
-                    style: GoogleFonts.montserrat(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    'CommuniSign',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF0077B6), // Text color in background
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
+  _MainDashboardState createState() => _MainDashboardState();
+}
 
-            // Horizontally Scrollable Feature Cards
-            SizedBox(
-              height: 260,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.only(left: 20),
-                children: [
-                  _buildFeatureCard(
-                    context,
-                    title: 'Translation',
-                    description: 'Translate signs to text or speech.',
-                    icon: Icons.g_translate,
-                    color: Color(0xFFB2D7F0), // Card background color
-                    destination: TranslateSignToTextScreen(),
-                  ),
-                  _buildFeatureCard(
-                    context,
-                    title: 'Text to Sign',
-                    description: 'Convert text into sign animations.',
-                    icon: Icons.text_fields,
-                    color: Color(0xFFB2D7F0), // Card background color
-                    destination: TranslateSignToTextScreen(),
-                  ),
-                  _buildFeatureCard(
-                    context,
-                    title: 'Emotion Detection',
-                    description: 'Identify sign emotions.',
-                    icon: Icons.face,
-                    color: Color(0xFFB2D7F0), // Card background color
-                    destination: EmotionDetectionScreen(),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 30),
+class _MainDashboardState extends State<MainDashboard> {
+  final String userName = 'Alex Johnson';
+  int _selectedIndex = 0;
 
-            // Upcoming Features Section
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Text(
-                'Upcoming Features',
-                style: GoogleFonts.montserrat(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+  // Main content of the dashboard
+  Widget _buildDashboardContent() {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header Section
+          Padding(
+            padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Hello again,',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
+                SizedBox(height: 5),
+                Text(
+                  userName,
+                  style: GoogleFonts.montserrat(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  'CommuniSign',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0077B6),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Horizontally Scrollable Feature Cards
+          SizedBox(
+            height: 260,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(left: 20),
+              children: [
+                _buildFeatureCard(
+                  context,
+                  title: 'Translation',
+                  description: 'Translate signs to text or speech.',
+                  icon: Icons.g_translate,
+                  color: Color(0xFFB2D7F0),
+                  destination: TranslateSignToTextScreen(),
+                ),
+                _buildFeatureCard(
+                  context,
+                  title: 'Text to Sign',
+                  description: 'Convert text into sign animations.',
+                  icon: Icons.text_fields,
+                  color: Color(0xFFB2D7F0),
+                  destination: TextToSignScreen(),
+                ),
+                _buildFeatureCard(
+                  context,
+                  title: 'Emotion Detection',
+                  description: 'Identify sign emotions.',
+                  icon: Icons.face,
+                  color: Color(0xFFB2D7F0),
+                  destination: EmotionDetectionScreen(),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 30),
+
+          // Upcoming Features Section
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Text(
+              'Upcoming Features',
+              style: GoogleFonts.montserrat(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
               ),
             ),
-            SizedBox(height: 15),
-
-            _buildUpcomingFeatureCard(
-              title: 'Learn Sign Language',
-              description: 'Master ASL with step-by-step lessons.',
-              icon: Icons.school,
-              color: Color(0xFFB2D7F0), // Card background color
-            ),
-            _buildUpcomingFeatureCard(
-              title: 'Sign Language Games',
-              description: 'Fun games to reinforce learning.',
-              icon: Icons.videogame_asset,
-              color: Color(0xFFB2D7F0), // Card background color
-            ),
-            _buildUpcomingFeatureCard(
-              title: 'Community Forum',
-              description: 'Engage with others learning sign language.',
-              icon: Icons.forum,
-              color: Color(0xFFB2D7F0), // Card background color
-            ),
-            _buildUpcomingFeatureCard(
-              title: 'Sign Challenges',
-              description: 'Take part in daily signing challenges.',
-              icon: Icons.emoji_events,
-              color: Color(0xFFB2D7F0), // Card background color
-            ),
-          ],
-        ),
-      ),
-
-      // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        backgroundColor: Color(0xFFFFFFFF), // Background color
-        elevation: 0,
-        selectedItemColor: Color(0xFF0077B6), // Text color in background
-        unselectedItemColor: Colors.grey.shade400,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_filled, size: 28),
-            label: '',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search, size: 28),
-            label: '',
+          SizedBox(height: 15),
+
+          _buildUpcomingFeatureCard(
+            title: 'Learn Sign Language',
+            description: 'Master ASL with step-by-step lessons.',
+            icon: Icons.school,
+            color: Color(0xFFB2D7F0),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline, size: 28),
-            label: '',
+          _buildUpcomingFeatureCard(
+            title: 'Sign Language Games',
+            description: 'Fun games to reinforce learning.',
+            icon: Icons.videogame_asset,
+            color: Color(0xFFB2D7F0),
+          ),
+          _buildUpcomingFeatureCard(
+            title: 'Community Forum',
+            description: 'Engage with others learning sign language.',
+            icon: Icons.forum,
+            color: Color(0xFFB2D7F0),
+          ),
+          _buildUpcomingFeatureCard(
+            title: 'Sign Challenges',
+            description: 'Take part in daily signing challenges.',
+            icon: Icons.emoji_events,
+            color: Color(0xFFB2D7F0),
           ),
         ],
       ),
     );
   }
 
-  // Feature Card Widget with Navigation
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFFFFFFFF),
+      endDrawer: _buildDrawer(context),
+      appBar: _selectedIndex == 0 ? AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Color(0xFF0077B6)),
+      ) : null,
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          _buildDashboardContent(),
+          SearchPage(),
+          UserAccountPage(),
+        ],
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 8,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          backgroundColor: Color(0xFFFFFFFF),
+          elevation: 0,
+          selectedItemColor: Color(0xFF0077B6),
+          unselectedItemColor: Colors.grey.shade400,
+          selectedLabelStyle: GoogleFonts.montserrat(
+            fontWeight: FontWeight.w600,
+          ),
+          unselectedLabelStyle: GoogleFonts.montserrat(
+            fontWeight: FontWeight.w500,
+          ),
+          type: BottomNavigationBarType.fixed,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_filled, size: 28),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search, size: 28),
+              label: 'Search',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline, size: 28),
+              label: 'Profile',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Feature Card Widget
   Widget _buildFeatureCard(
     BuildContext context, {
     required String title,
@@ -201,14 +241,14 @@ class MainDashboard extends StatelessWidget {
               style: GoogleFonts.montserrat(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF000000), // TEXT COLOR CHANGED HERE
+                color: Color(0xFF000000),
               ),
             ),
             Text(
               description,
               style: GoogleFonts.roboto(
                 fontSize: 13,
-                color: Color(0xFF000000), // TEXT COLOR CHANGED HERE
+                color: Color(0xFF000000),
               ),
             ),
           ],
@@ -221,7 +261,7 @@ class MainDashboard extends StatelessWidget {
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
       child: Container(
-        color: Color(0xFFB2D7F0), // Card background color
+        color: Color(0xFFB2D7F0),
         child: Column(
           children: [
             SizedBox(height: 50),
@@ -232,7 +272,7 @@ class MainDashboard extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Text(
-              'Alex Johnson',
+              userName,
               style: GoogleFonts.montserrat(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -301,7 +341,7 @@ class MainDashboard extends StatelessWidget {
                     style: GoogleFonts.montserrat(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF000000), // TEXT COLOR CHANGED HERE
+                      color: Color(0xFF000000),
                     ),
                   ),
                   SizedBox(height: 5),
@@ -309,7 +349,7 @@ class MainDashboard extends StatelessWidget {
                     description,
                     style: GoogleFonts.roboto(
                       fontSize: 14,
-                      color: Color(0xFF000000), // TEXT COLOR CHANGED HERE
+                      color: Color(0xFF000000),
                     ),
                   ),
                 ],

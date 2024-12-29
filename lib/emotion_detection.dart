@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:camera/camera.dart';
 import 'dart:typed_data';
 import 'dart:async';
@@ -9,18 +10,37 @@ class EmotionDetectionScreen extends StatefulWidget {
   _EmotionDetectionScreenState createState() => _EmotionDetectionScreenState();
 }
 
-class _EmotionDetectionScreenState extends State<EmotionDetectionScreen> {
+class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<Offset> _slideAnimation;
   late CameraController _cameraController;
   late List<CameraDescription> _cameras;
+  final BackendService _backendService = BackendService();
   bool _isCameraInitialized = false;
   bool _isDetecting = false;
-  String _detectedEmotion = "Emotion will appear here.";
+  String _detectedEmotion = "Waiting to detect emotions...";
+  double? _confidence;
+  Map<String, dynamic>? _allEmotions;
   Timer? _detectionTimer;
 
   @override
   void initState() {
     super.initState();
     _initializeCamera();
+    _setupAnimation();
+  }
+
+  void _setupAnimation() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 800),
+    );
+    _slideAnimation = Tween<Offset>(begin: Offset(0, 1), end: Offset(0, 0))
+        .animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
   }
 
   Future<void> _initializeCamera() async {
@@ -42,168 +62,358 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen> {
   @override
   void dispose() {
     _stopDetection();
+    _animationController.dispose();
     _cameraController.dispose();
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.pink[50],
-      appBar: AppBar(
-        title: Text('Emotion Detection', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.pinkAccent,
-        centerTitle: true,
-        elevation: 0,
+  Widget _buildControlButton({
+    required VoidCallback? onPressed,
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon),
+      label: Text(
+        label,
+        style: GoogleFonts.montserrat(
+          fontWeight: FontWeight.bold,
+        ),
       ),
-      body: Column(
-        children: [
-          // Camera Preview Section
-          Expanded(
-            flex: 2,
-            child: Container(
-              margin: const EdgeInsets.all(12.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.pink.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: _isCameraInitialized
-                    ? CameraPreview(_cameraController)
-                    : Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.pinkAccent,
-                        ),
-                      ),
-              ),
-            ),
-          ),
-
-          // Detected Emotion Section
-          Expanded(
-            flex: 1,
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.pink.withOpacity(0.2),
-                    blurRadius: 8,
-                    spreadRadius: 2,
-                    offset: Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Detected Emotion',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.pinkAccent,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    _detectedEmotion,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 18, color: Colors.black54),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Control Buttons
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _startDetection,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.pinkAccent,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  icon: Icon(Icons.play_arrow),
-                  label: Text('Start'),
-                ),
-                ElevatedButton.icon(
-                  onPressed: _stopDetection,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[400],
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  icon: Icon(Icons.stop),
-                  label: Text('Stop'),
-                ),
-              ],
-            ),
-          ),
-        ],
+      style: ElevatedButton.styleFrom(
+        backgroundColor: onPressed == null ? Colors.grey : color,
+        foregroundColor: Colors.white,
+        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
       ),
     );
   }
 
-  // Method to start emotion detection
   void _startDetection() {
     if (_isDetecting || !_cameraController.value.isInitialized) return;
 
     setState(() {
       _isDetecting = true;
-      _detectedEmotion = "Detecting emotion...";
+      _detectedEmotion = "Detecting emotions...";
     });
 
-    _detectionTimer = Timer.periodic(Duration(milliseconds: 700), (_) async {
+    _detectionTimer = Timer.periodic(Duration(milliseconds: 500), (_) async {
       if (!_isDetecting) return;
 
       try {
         final XFile picture = await _cameraController.takePicture();
         final Uint8List imageBytes = await picture.readAsBytes();
-
-        // Send frame to backend
-        String response = await sendFrameForEmotion(imageBytes);
-
+        
+        final EmotionResponse response = await _backendService.sendFrameForEmotion(imageBytes);
+        
         setState(() {
-          _detectedEmotion = response;
+          if (response.error != null) {
+            _detectedEmotion = "Error: ${response.error}";
+            _confidence = null;
+            _allEmotions = null;
+          } else {
+            _detectedEmotion = response.emotion ?? "No emotion detected";
+            _confidence = response.confidence;
+            _allEmotions = response.allEmotions;
+          }
         });
       } catch (e) {
-        print('Error capturing frame: $e');
         setState(() {
-          _detectedEmotion = "Error detecting emotion.";
+          _detectedEmotion = "Error: $e";
+          _confidence = null;
+          _allEmotions = null;
         });
       }
     });
   }
 
-  // Method to stop emotion detection
   void _stopDetection() {
+    _detectionTimer?.cancel();
     setState(() {
       _isDetecting = false;
-      _detectionTimer?.cancel();
-      _detectedEmotion = "Emotion detection stopped.";
+      _detectedEmotion = "Detection stopped. Ready to start again.";
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFFFFFFFF),
+      body: Stack(
+        children: [
+          // Welcome Screen
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 240,
+                  height: 240,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFB2D7F0),
+                    borderRadius: BorderRadius.circular(120),
+                  ),
+                  child: Icon(
+                    Icons.emoji_emotions,
+                    size: 120,
+                    color: Color(0xFF0077B6),
+                  ),
+                ),
+                SizedBox(height: 30),
+                Text(
+                  'Emotion Detection',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0077B6),
+                  ),
+                ),
+                SizedBox(height: 15),
+                Text(
+                  'Detect emotions in real-time',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 16,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                SizedBox(height: 30),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF0077B6),
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 3,
+                  ),
+                  child: Text(
+                    'Start Detection',
+                    style: GoogleFonts.montserrat(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  onPressed: () => _animationController.forward(),
+                ),
+              ],
+            ),
+          ),
+          // Detection Interface
+          SlideTransition(
+            position: _slideAnimation,
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  )
+                ],
+              ),
+              child: Column(
+                children: [
+                  // Custom AppBar
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.arrow_back_ios, color: Color(0xFF0077B6)),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        Text(
+                          'Emotion Detection',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF0077B6),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.help_outline, color: Color(0xFF0077B6)),
+                          onPressed: () {/* Show help dialog */},
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Camera Preview
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFB2D7F0),
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            spreadRadius: 1,
+                          )
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(30),
+                        child: _isCameraInitialized
+                            ? Stack(
+                                children: [
+                                  CameraPreview(_cameraController),
+                                  if (_isDetecting)
+                                    Positioned(
+                                      top: 20,
+                                      right: 20,
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black54,
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Container(
+                                              width: 8,
+                                              height: 8,
+                                              decoration: BoxDecoration(
+                                                color: Colors.red,
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              'Detecting',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              )
+                            : Center(
+                                child: CircularProgressIndicator(
+                                  color: Color(0xFF0077B6),
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                  // Emotion Results
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      margin: EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFB2D7F0),
+                        borderRadius: BorderRadius.circular(25),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            spreadRadius: 1,
+                          )
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.emoji_emotions, color: Color(0xFF0077B6)),
+                              SizedBox(width: 10),
+                              Text(
+                                'Detected Emotion',
+                                style: GoogleFonts.montserrat(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF0077B6),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 15),
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      _detectedEmotion,
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    if (_confidence != null) ...[
+                                      SizedBox(height: 10),
+                                      Text(
+                                        'Confidence: ${(_confidence! * 100).toStringAsFixed(1)}%',
+                                        style: GoogleFonts.roboto(
+                                          fontSize: 16,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Control Buttons
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 30, left: 20, right: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildControlButton(
+                          onPressed: _isDetecting ? null : _startDetection,
+                          icon: Icons.play_arrow,
+                          label: 'Start',
+                          color: Colors.green,
+                        ),
+                        _buildControlButton(
+                          onPressed: _isDetecting ? _stopDetection : null,
+                          icon: Icons.stop,
+                          label: 'Stop',
+                          color: Colors.red,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
