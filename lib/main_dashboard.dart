@@ -6,6 +6,7 @@ import 'emotion_detection.dart';
 import 'search_page.dart';
 import 'user_account.dart';
 import 'text_to_sign.dart';
+import 'under_construction .dart';
 
 class MainDashboard extends StatefulWidget {
   @override
@@ -319,6 +320,17 @@ class _MainDashboardState extends State<MainDashboard> {
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: GestureDetector(  // Add this
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UnderConstructionPage(
+              featureTitle: title,
+            ),
+          ),
+        );
+      },
       child: Container(
         height: 120,
         padding: const EdgeInsets.all(20),
@@ -357,6 +369,7 @@ class _MainDashboardState extends State<MainDashboard> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
