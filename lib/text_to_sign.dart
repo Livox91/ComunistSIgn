@@ -9,16 +9,17 @@ class TextToSignScreen extends StatefulWidget {
 
 class _TextToSignScreenState extends State<TextToSignScreen> {
   VideoPlayerController? _controller;
-  String? _selectedWord;
+  String? _selectedPhrase;
   bool _isPlaying = false;
-
-  // Sample word categories and their associated words
-  final Map<String, List<String>> wordCategories = {
-    'Common Phrases': ['Hello', 'Thank you', 'Please', 'Sorry', 'Good morning'],
-    'Emotions': ['Happy', 'Sad', 'Angry', 'Excited', 'Tired'],
-    'Numbers': ['One', 'Two', 'Three', 'Four', 'Five'],
-    'Colors': ['Red', 'Blue', 'Green', 'Yellow', 'Purple'],
-    'Family': ['Mother', 'Father', 'Sister', 'Brother', 'Family'],
+  bool _isLoading = false;
+  String _errorMessage = '';
+  
+  final Map<String, String> phraseVideos = {
+    'Hello': 'assets/hello.mp4',
+    'Thank you': 'assets/thank_you.mp4',
+    'Please': 'assets/please.mp4',
+    'Sorry': 'assets/sorry.mp4',
+    'Good morning': 'assets/good_morning.mp4',
   };
 
   @override
@@ -27,79 +28,97 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
     super.dispose();
   }
 
-  void _playVideo(String word) {
-    // Here you would normally load the video file for the selected word
-    // For demonstration, we'll just print the selected word
-    setState(() {
-      _selectedWord = word;
-      _isPlaying = true;
-    });
-    
-    // Example of how to implement video playing:
-    // _controller = VideoPlayerController.asset('assets/videos/$word.mp4')
-    //   ..initialize().then((_) {
-    //     setState(() {});
-    //     _controller?.play();
-    //   });
-  }
+  Future<void> _playVideo(String phrase) async {
+  if (_isLoading) return;
+  
+  setState(() {
+    _isLoading = true;
+    _errorMessage = '';
+  });
 
-  Widget _buildCategorySection(String category) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Text(
-            category,
-            style: GoogleFonts.montserrat(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 120,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            itemCount: wordCategories[category]?.length ?? 0,
-            itemBuilder: (context, index) {
-              final word = wordCategories[category]![index];
-              return _buildWordCard(word);
-            },
-          ),
-        ),
-      ],
+  try {
+    // Dispose of previous controller
+    await _controller?.dispose();
+    
+    final videoPath = phraseVideos[phrase];
+    if (videoPath == null) {
+      throw Exception('Video path not found for phrase: $phrase');
+    }
+
+    _controller = VideoPlayerController.asset(
+      videoPath,
+      videoPlayerOptions: VideoPlayerOptions(
+        mixWithOthers: true,
+        allowBackgroundPlayback: false,
+      ),
     );
-  }
 
-  Widget _buildWordCard(String word) {
-    final isSelected = _selectedWord == word;
+    // Add error listener before initialization
+    _controller!.addListener(() {
+      final error = _controller!.value.errorDescription;
+      if (error != null && error.isNotEmpty) {
+        print('Video player error: $error');
+        setState(() {
+          _errorMessage = 'Error playing video: $error';
+          _isLoading = false;
+        });
+      }
+    });
+
+    // Initialize with error catching
+    await _controller!.initialize().catchError((error) {
+      print('Initialization error: $error');
+      setState(() {
+        _errorMessage = 'Could not load video. Please check asset files.';
+        _isLoading = false;
+      });
+      return;
+    });
+
+    setState(() {
+      _selectedPhrase = phrase;
+      _isPlaying = true;
+      _isLoading = false;
+    });
+
+    await _controller!.play();
+  } catch (error) {
+    print('Error in _playVideo: $error');
+    setState(() {
+      _isLoading = false;
+      _errorMessage = 'Failed to load video. Please check assets and paths.';
+    });
+  }
+}
+
+  Widget _buildPhraseCard(String phrase) {
+    final isSelected = _selectedPhrase == phrase;
     
-    return GestureDetector(
-      onTap: () => _playVideo(word),
-      child: Container(
-        width: 150,
-        margin: EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          color: isSelected ? Color(0xFF0077B6) : Color(0xFFB2D7F0),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Center(
-          child: Text(
-            word,
-            style: GoogleFonts.montserrat(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: isSelected ? Colors.white : Colors.black87,
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: GestureDetector(
+        onTap: () => _playVideo(phrase),
+        child: Container(
+          height: 80,
+          decoration: BoxDecoration(
+            color: isSelected ? Color(0xFF0077B6) : Color(0xFFB2D7F0),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 4,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              phrase,
+              style: GoogleFonts.montserrat(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : Colors.black87,
+              ),
             ),
           ),
         ),
@@ -108,42 +127,72 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
   }
 
   Widget _buildVideoPlayer() {
-    return Container(
-      height: 300,
-      margin: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Color(0xFFB2D7F0),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Center(
-        child: _selectedWord == null
-            ? Text(
-                'Select a word to see its sign',
-                style: GoogleFonts.montserrat(
-                  fontSize: 18,
-                  color: Colors.black87,
-                ),
-              )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.sign_language,
-                    size: 80,
-                    color: Color(0xFF0077B6),
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    'Playing: $_selectedWord',
-                    style: GoogleFonts.montserrat(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+    return Column(
+      children: [
+        Container(
+          height: 300,
+          margin: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Color(0xFFB2D7F0),
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(30),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (_controller != null && _controller!.value.isInitialized)
+                  FittedBox(
+                    fit: BoxFit.contain,
+                    child: SizedBox(
+                      width: _controller!.value.size.width,
+                      height: _controller!.value.size.height,
+                      child: VideoPlayer(_controller!),
                     ),
                   ),
-                ],
-              ),
-      ),
+                if (_isLoading)
+                  Center(
+                    child: CircularProgressIndicator(
+                      color: Color(0xFF0077B6),
+                    ),
+                  ),
+                if (!_isLoading && (_controller == null || !_controller!.value.isInitialized))
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.sign_language,
+                          size: 80,
+                          color: Color(0xFF0077B6),
+                        ),
+                        SizedBox(height: 20),
+                        Text(
+                          _selectedPhrase == null
+                              ? 'Select a phrase to see its sign'
+                              : 'Loading video for: $_selectedPhrase',
+                          style: GoogleFonts.montserrat(
+                            fontSize: 18,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        if (_errorMessage.isNotEmpty)
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              _errorMessage,
+              style: TextStyle(color: Colors.red),
+              textAlign: TextAlign.center,
+            ),
+          ),
+      ],
     );
   }
 
@@ -159,7 +208,7 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Text to Sign',
+          'Common Phrases',
           style: GoogleFonts.montserrat(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -172,8 +221,8 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
           _buildVideoPlayer(),
           Expanded(
             child: ListView(
-              children: wordCategories.keys
-                  .map((category) => _buildCategorySection(category))
+              children: phraseVideos.keys
+                  .map((phrase) => _buildPhraseCard(phrase))
                   .toList(),
             ),
           ),
