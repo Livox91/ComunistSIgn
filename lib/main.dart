@@ -1,14 +1,22 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mcprj/presentation/blocs/bloc/user_auth_bloc.dart';
+import 'package:mcprj/presentation/screens/login.dart';
 import 'presentation/screens/main_dashboard.dart';
 import 'presentation/screens/translate_sign_to_text.dart';
 import 'presentation/screens/emotion_detection.dart';
 import 'presentation/screens/settings_page.dart'; // Import the file where the MainDashboard is defined
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseAuth.instance;
   runApp(MyApp());
 }
 
@@ -23,7 +31,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => MainDashboard(),
+        '/': (context) => Authentication(),
         '/signToText': (context) => TranslateSignToTextScreen(),
         '/textToSign': (context) => PlaceholderScreen('Text to Sign Language'),
         '/settings': (context) => SettingsPage(),
@@ -77,19 +85,29 @@ class Authentication extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => UserAuthBloc(),
-      child: AuthenticationView(),
+      create: (context) => UserAuthBloc(FirebaseAuth.instance),
+      child: BlocConsumer<UserAuthBloc, UserAuthState>(
+        builder: (context, state) {
+          if (state is AuthInitial) {
+            return LoginPage();
+          } else if (state is AuthLoading) {
+            return CircularProgressIndicator();
+          } else if (state is AuthError) {
+            return Text("Error: ${state.message}");
+          } else if (state is AuthAuthenticated) {
+            return MainDashboard();
+          } else {
+            return Text("Unknown state: $state");
+          }
+        },
+        listener: (context, state) {
+          if (state is AuthError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
+        },
+      ),
     );
-  }
-}
-
-class AuthenticationView extends StatelessWidget {
-  const AuthenticationView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final UserAuthBloc userAuthBloc = BlocProvider.of<UserAuthBloc>(context);
-
-    return BlocBuilder(builder: builder);
   }
 }

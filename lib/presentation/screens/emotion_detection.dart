@@ -88,10 +88,6 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
 
         final EmotionResponse response =
             await _backendService.sendFrameForEmotion(imageBytes);
-
-        final EmotionResponse response =
-            await _backendService.sendFrameForEmotion(imageBytes);
-
         setState(() {
           if (response.error != null) {
             _detectedEmotion = "Error: ${response.error}";

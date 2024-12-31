@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "866722511083",
+    "project_id": "mcprj-eb9ab",
+    "storage_bucket": "mcprj-eb9ab.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:866722511083:android:f99753816952a4be87e6ae",
+        "android_client_info": {
+          "package_name": "com.example.mcprj"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp29jQaSnvVgkmp1plWu0l4vd5lcSQ1e4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

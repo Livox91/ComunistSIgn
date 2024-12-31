@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 part 'user_auth_event.dart';
 part 'user_auth_state.dart';
 
-class UserAuthBloc extends Bloc<AuthEvent, AuthState> {
+class UserAuthBloc extends Bloc<AuthEvent, UserAuthState> {
   final FirebaseAuth _auth;
 
   UserAuthBloc(this._auth) : super(AuthInitial()) {
@@ -16,11 +16,14 @@ class UserAuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onSignUp(
-      AuthSignUpRequested event, Emitter<AuthState> emit) async {
+      AuthSignUpRequested event, Emitter<UserAuthState> emit) async {
     emit(AuthLoading());
     try {
       await _auth.createUserWithEmailAndPassword(
           email: event.email, password: event.password);
+      await _auth.signInWithEmailAndPassword(
+          email: event.email, password: event.password);
+
       emit(AuthAuthenticated());
     } catch (e) {
       emit(AuthError(e.toString()));
@@ -28,11 +31,12 @@ class UserAuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onSignIn(
-      AuthSignInRequested event, Emitter<AuthState> emit) async {
+      AuthSignInRequested event, Emitter<UserAuthState> emit) async {
     emit(AuthLoading());
     try {
       await _auth.signInWithEmailAndPassword(
           email: event.email, password: event.password);
+
       emit(AuthAuthenticated());
     } catch (e) {
       emit(AuthError(e.toString()));
@@ -40,7 +44,7 @@ class UserAuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onSignOut(
-      AuthSignOutRequested event, Emitter<AuthState> emit) async {
+      AuthSignOutRequested event, Emitter<UserAuthState> emit) async {
     emit(AuthLoading());
     try {
       await _auth.signOut();
