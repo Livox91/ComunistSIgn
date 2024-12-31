@@ -35,8 +35,9 @@ class UnderConstructionPage extends StatelessWidget {
           children: [
             Lottie.asset(
               'assets/under_construction.json', // Path to your local JSON file
-              height: 300,
+              height: 400,
               fit: BoxFit.contain,
+              alignment: Alignment.center,
             ),
             SizedBox(height: 40),
             Text(
