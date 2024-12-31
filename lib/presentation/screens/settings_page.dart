@@ -54,7 +54,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               SizedBox(height: 20),
-              
+
               // Settings Cards
               _buildSettingsCard(
                 title: 'Language Settings',
@@ -82,9 +82,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ],
               ),
-              
+
               SizedBox(height: 20),
-              
+
               _buildSettingsCard(
                 title: 'App Settings',
                 children: [
@@ -99,9 +99,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ],
               ),
-              
+
               SizedBox(height: 20),
-              
+
               _buildSettingsCard(
                 title: 'Support',
                 children: [

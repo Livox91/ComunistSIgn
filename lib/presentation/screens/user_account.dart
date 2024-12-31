@@ -1,20 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mcprj/domain/user_model.dart';
 import 'settings_page.dart';
-
-class UserProfile {
-  String name;
-  String email;
-  String? profileImage;
-  String? phoneNumber;
-
-  UserProfile({
-    required this.name,
-    required this.email,
-    this.profileImage,
-    this.phoneNumber,
-  });
-}
 
 class UserAccountPage extends StatefulWidget {
   @override
@@ -62,7 +49,8 @@ class _UserAccountPageState extends State<UserAccountPage> {
                       CircleAvatar(
                         radius: 50,
                         backgroundColor: Color(0xFF0077B6),
-                        child: Icon(Icons.person, size: 60, color: Colors.white),
+                        child:
+                            Icon(Icons.person, size: 60, color: Colors.white),
                       ),
                       Positioned(
                         bottom: 0,
@@ -76,7 +64,8 @@ class _UserAccountPageState extends State<UserAccountPage> {
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white, width: 2),
                             ),
-                            child: Icon(Icons.edit, size: 20, color: Colors.white),
+                            child:
+                                Icon(Icons.edit, size: 20, color: Colors.white),
                           ),
                         ),
                       ),
@@ -190,7 +179,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
         leading: Container(
           padding: EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: isDestructive 
+            color: isDestructive
                 ? Colors.red.withOpacity(0.1)
                 : Color(0xFFB2D7F0).withOpacity(0.3),
             borderRadius: BorderRadius.circular(10),

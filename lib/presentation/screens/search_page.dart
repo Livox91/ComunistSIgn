@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'emotion_detection.dart';
 import 'translate_sign_to_text.dart';
-import 'text_to_sign.dart';
+import '../../text_to_sign.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -41,10 +41,15 @@ class _SearchPageState extends State<SearchPage> {
 
   List<Map<String, dynamic>> get _filteredFeatures {
     if (_searchQuery.isEmpty) return [];
-    return _mainFeatures.where((feature) =>
-        feature['title'].toLowerCase().contains(_searchQuery.toLowerCase()) ||
-        feature['description'].toLowerCase().contains(_searchQuery.toLowerCase())
-    ).toList();
+    return _mainFeatures
+        .where((feature) =>
+            feature['title']
+                .toLowerCase()
+                .contains(_searchQuery.toLowerCase()) ||
+            feature['description']
+                .toLowerCase()
+                .contains(_searchQuery.toLowerCase()))
+        .toList();
   }
 
   @override
@@ -120,10 +125,12 @@ class _SearchPageState extends State<SearchPage> {
                         hintStyle: GoogleFonts.montserrat(
                           color: Colors.grey,
                         ),
-                        prefixIcon: Icon(Icons.search, color: Color(0xFF0077B6)),
+                        prefixIcon:
+                            Icon(Icons.search, color: Color(0xFF0077B6)),
                         suffixIcon: _searchQuery.isNotEmpty
                             ? IconButton(
-                                icon: Icon(Icons.clear, color: Color(0xFF0077B6)),
+                                icon:
+                                    Icon(Icons.clear, color: Color(0xFF0077B6)),
                                 onPressed: () {
                                   setState(() {
                                     _searchController.clear();
@@ -147,7 +154,8 @@ class _SearchPageState extends State<SearchPage> {
 
             // Search Results or Features
             Expanded(
-              child: _showResults ? _buildSearchResults() : _buildFeaturesList(),
+              child:
+                  _showResults ? _buildSearchResults() : _buildFeaturesList(),
             ),
           ],
         ),

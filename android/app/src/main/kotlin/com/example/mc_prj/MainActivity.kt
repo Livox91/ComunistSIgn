@@ -1,4 +1,4 @@
-package com.example.mc_prj
+package com.example.mcprj
 
 import io.flutter.embedding.android.FlutterActivity
 

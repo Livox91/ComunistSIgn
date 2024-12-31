@@ -1,27 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:camera/camera.dart';
+import 'package:mcprj/data/emotion_service.dart';
+import 'package:mcprj/domain/emotion_model.dart';
 import 'dart:typed_data';
 import 'dart:async';
-import 'backend_service.dart';
 
-class TranslateSignToTextScreen extends StatefulWidget {
+import 'package:mcprj/presentation/builders/build_feature_cards.dart';
+
+class EmotionDetectionScreen extends StatefulWidget {
   @override
-  _TranslateSignToTextScreenState createState() => _TranslateSignToTextScreenState();
+  _EmotionDetectionScreenState createState() => _EmotionDetectionScreenState();
 }
 
-class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
+class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<Offset> _slideAnimation;
   late CameraController _cameraController;
   late List<CameraDescription> _cameras;
-  final BackendService _backendService = BackendService();
+  final EmotionService _backendService = EmotionService();
   bool _isCameraInitialized = false;
   bool _isDetecting = false;
-  String _translatedText = "Translation will appear here.";
+  String _detectedEmotion = "Waiting to detect emotions...";
+  double? _confidence;
+  Map<String, dynamic>? _allEmotions;
   Timer? _detectionTimer;
-  List<String> _currentSequence = [];
 
   @override
   void initState() {
@@ -71,85 +75,46 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
 
     setState(() {
       _isDetecting = true;
-      _translatedText = "Detecting...";
+      _detectedEmotion = "Detecting emotions...";
     });
 
-    _detectionTimer = Timer.periodic(Duration(milliseconds: 1000), (_) async {  // Increased to 1 second
+    _detectionTimer = Timer.periodic(Duration(milliseconds: 500), (_) async {
       if (!_isDetecting) return;
 
       try {
         final XFile picture = await _cameraController.takePicture();
         final Uint8List imageBytes = await picture.readAsBytes();
-        
-        // Process gestures
-        final gestureResponse = await _backendService.sendFrameToBackend(imageBytes);
-        
+
+        final EmotionResponse response =
+            await _backendService.sendFrameForEmotion(imageBytes);
+
         setState(() {
-          if (gestureResponse.error != null) {
-            _translatedText = gestureResponse.error!;
-          } else if (gestureResponse.phrase != null) {
-            // When a phrase is detected, pause detection for a moment
-            _isDetecting = false;
-            _translatedText = gestureResponse.phrase!;  // Show the actual phrase
-            _currentSequence = [];
-            
-            // Resume detection after 3 seconds
-            Future.delayed(Duration(seconds: 3), () {
-              if (mounted) {
-                setState(() {
-                  _isDetecting = true;
-                  _translatedText = "Detecting...";
-                });
-              }
-            });
-          } else if (gestureResponse.gestures.isNotEmpty) {
-            _currentSequence = gestureResponse.sequence;
-            // Show both current gestures and accumulated sequence
-            _translatedText = "Detected: ${gestureResponse.gestures.join('')}";
+          if (response.error != null) {
+            _detectedEmotion = "Error: ${response.error}";
+            _confidence = null;
+            _allEmotions = null;
           } else {
-            _translatedText = "No gestures detected";
+            _detectedEmotion = response.emotion ?? "No emotion detected";
+            _confidence = response.confidence;
+            _allEmotions = response.allEmotions;
           }
         });
-
       } catch (e) {
         setState(() {
-          _translatedText = "Error: $e";
+          _detectedEmotion = "Error: $e";
+          _confidence = null;
+          _allEmotions = null;
         });
       }
     });
-}
+  }
+
   void _stopDetection() {
     _detectionTimer?.cancel();
     setState(() {
       _isDetecting = false;
-      _translatedText = "Detection stopped. Ready to start again.";
+      _detectedEmotion = "Detection stopped. Ready to start again.";
     });
-  }
-
-  Widget _buildControlButton({
-    required VoidCallback? onPressed,
-    required IconData icon,
-    required String label,
-    required Color color,
-  }) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon),
-      label: Text(
-        label,
-        style: GoogleFonts.montserrat(
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: onPressed == null ? Colors.grey : color,
-        foregroundColor: Colors.white,
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-      ),
-    );
   }
 
   @override
@@ -171,14 +136,14 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
                     borderRadius: BorderRadius.circular(120),
                   ),
                   child: Icon(
-                    Icons.sign_language,
+                    Icons.emoji_emotions,
                     size: 120,
                     color: Color(0xFF0077B6),
                   ),
                 ),
                 SizedBox(height: 30),
                 Text(
-                  'Sign Language Translator',
+                  'Emotion Detection',
                   style: GoogleFonts.montserrat(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -187,7 +152,7 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
                 ),
                 SizedBox(height: 15),
                 Text(
-                  'Start translating sign language in real-time',
+                  'Detect emotions in real-time',
                   style: GoogleFonts.montserrat(
                     fontSize: 16,
                     color: Colors.grey.shade600,
@@ -204,7 +169,7 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
                     elevation: 3,
                   ),
                   child: Text(
-                    'Start Translating',
+                    'Start Detection',
                     style: GoogleFonts.montserrat(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -216,7 +181,7 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
               ],
             ),
           ),
-          // Translation Interface
+          // Detection Interface
           SlideTransition(
             position: _slideAnimation,
             child: Container(
@@ -241,11 +206,12 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back_ios, color: Color(0xFF0077B6)),
+                          icon: Icon(Icons.arrow_back_ios,
+                              color: Color(0xFF0077B6)),
                           onPressed: () => Navigator.pop(context),
                         ),
                         Text(
-                          'Sign to Text',
+                          'Emotion Detection',
                           style: GoogleFonts.montserrat(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -253,7 +219,8 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.help_outline, color: Color(0xFF0077B6)),
+                          icon: Icon(Icons.help_outline,
+                              color: Color(0xFF0077B6)),
                           onPressed: () {/* Show help dialog */},
                         ),
                       ],
@@ -292,7 +259,8 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
                                         ),
                                         decoration: BoxDecoration(
                                           color: Colors.black54,
-                                          borderRadius: BorderRadius.circular(20),
+                                          borderRadius:
+                                              BorderRadius.circular(20),
                                         ),
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
@@ -307,7 +275,7 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
                                             ),
                                             SizedBox(width: 8),
                                             Text(
-                                              'Recording',
+                                              'Detecting',
                                               style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 12,
@@ -327,7 +295,7 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
                       ),
                     ),
                   ),
-                  // Translation Results
+                  // Emotion Results
                   Expanded(
                     flex: 2,
                     child: Container(
@@ -349,10 +317,11 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.translate, color: Color(0xFF0077B6)),
+                              Icon(Icons.emoji_emotions,
+                                  color: Color(0xFF0077B6)),
                               SizedBox(width: 10),
                               Text(
-                                'Translation',
+                                'Detected Emotion',
                                 style: GoogleFonts.montserrat(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -370,13 +339,28 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: SingleChildScrollView(
-                                child: Text(
-                                  _translatedText,
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.roboto(
-                                    fontSize: 18,
-                                    color: Colors.black87,
-                                  ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      _detectedEmotion,
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    if (_confidence != null) ...[
+                                      SizedBox(height: 10),
+                                      Text(
+                                        'Confidence: ${(_confidence! * 100).toStringAsFixed(1)}%',
+                                        style: GoogleFonts.roboto(
+                                          fontSize: 16,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
                                 ),
                               ),
                             ),
@@ -391,13 +375,13 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildControlButton(
+                        buildControlButton(
                           onPressed: _isDetecting ? null : _startDetection,
                           icon: Icons.play_arrow,
                           label: 'Start',
                           color: Colors.green,
                         ),
-                        _buildControlButton(
+                        buildControlButton(
                           onPressed: _isDetecting ? _stopDetection : null,
                           icon: Icons.stop,
                           label: 'Stop',
