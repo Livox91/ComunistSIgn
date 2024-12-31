@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:camera/camera.dart';
+import 'package:lottie/lottie.dart'; 
 import 'dart:typed_data';
 import 'dart:async';
 import 'backend_service.dart';
@@ -107,9 +108,10 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
       try {
         final XFile picture = await _cameraController.takePicture();
         final Uint8List imageBytes = await picture.readAsBytes();
-        
-        final EmotionResponse response = await _backendService.sendFrameForEmotion(imageBytes);
-        
+
+        final EmotionResponse response =
+            await _backendService.sendFrameForEmotion(imageBytes);
+
         setState(() {
           if (response.error != null) {
             _detectedEmotion = "Error: ${response.error}";
@@ -153,14 +155,9 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
                 Container(
                   width: 240,
                   height: 240,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFB2D7F0),
-                    borderRadius: BorderRadius.circular(120),
-                  ),
-                  child: Icon(
-                    Icons.emoji_emotions,
-                    size: 120,
-                    color: Color(0xFF0077B6),
+                  child: Lottie.asset(
+                    'assets/emotion.json', // Replace with your animation file path
+                    fit: BoxFit.cover,
                   ),
                 ),
                 SizedBox(height: 30),

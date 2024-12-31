@@ -344,10 +344,14 @@ class _UserAccountPageState extends State<UserAccountPage> {
                 'Logout',
                 style: GoogleFonts.montserrat(),
               ),
-              onPressed: () {
-                // Handle logout logic here
-                Navigator.pop(context);
-              },
+             onPressed: () {
+  Navigator.pop(context);
+  Navigator.pushNamedAndRemoveUntil(
+    context,
+    '/',
+    (route) => false,
+  );
+},
             ),
           ],
         );

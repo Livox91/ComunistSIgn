@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'main_dashboard.dart';
 import 'translate_sign_to_text.dart';
 import 'emotion_detection.dart';
-import 'settings_page.dart';// Import the file where the MainDashboard is defined
+import 'settings_page.dart';
+import 'login.dart';
 
 
 void main() {
@@ -20,7 +21,8 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => MainDashboard(),
+        '/': (context) => LoginPage(),
+        '/dashboard': (context) => MainDashboard(),
         '/signToText': (context) => TranslateSignToTextScreen(),
         '/textToSign': (context) => PlaceholderScreen('Text to Sign Language'),
         '/settings': (context) => SettingsPage(),
@@ -53,18 +55,3 @@ class PlaceholderScreen extends StatelessWidget {
   }
 }
 
-// Exit screen
-class ExitScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text(
-          'Thank you for using Communication Bridge!',
-          style: TextStyle(fontSize: 20),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-}
