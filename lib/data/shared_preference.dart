@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPref {
   static const String _userKey = 'user';
+  static const String _firstTimeKey = 'firstTime';
 
   Future<void> saveUser(UserProfile user) async {
     final prefs = await SharedPreferences.getInstance();
@@ -17,6 +18,16 @@ class SharedPref {
       return UserProfile.fromRawJson(userJson);
     }
     return null;
+  }
+
+  Future<void> setFirstTimeUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_firstTimeKey, false);
+  }
+
+  Future<bool> isFirstTimeUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_firstTimeKey) ?? true;
   }
 
   /// Remove user data from Shared Preferences

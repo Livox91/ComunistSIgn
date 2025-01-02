@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mcprj/presentation/blocs/bloc/user_auth_bloc.dart';
+import 'package:mcprj/presentation/blocs/auth_bloc/user_auth_bloc.dart';
 import 'login.dart';
 
 class SignupPage extends StatefulWidget {

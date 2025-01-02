@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mcprj/data/shared_preference.dart';
+import 'package:mcprj/domain/user_model.dart';
+import 'package:mcprj/presentation/blocs/first_time_bloc/first_time_bloc.dart';
 
 class OnboardingFlow extends StatefulWidget {
-  final Function(String name, bool isDarkMode)? onComplete;
   final String? welcomeAnimation;
   final String? nameAnimation;
   final String? themeAnimation;
 
   const OnboardingFlow({
-    Key? key, 
-    this.onComplete,
+    Key? key,
     this.welcomeAnimation = 'assets/welcome.json',
     this.nameAnimation = 'assets/name.json',
     this.themeAnimation = 'assets/theme.json',
@@ -21,10 +23,19 @@ class OnboardingFlow extends StatefulWidget {
 }
 
 class _OnboardingFlowState extends State<OnboardingFlow> {
+  final SharedPref sharedPref = SharedPref();
   final PageController _pageController = PageController();
   final TextEditingController _nameController = TextEditingController();
+  final UserProfile user = UserProfile();
   bool _isDarkMode = false;
   int _currentPage = 0;
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _nameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,15 +189,15 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
           const SizedBox(height: 60),
           Text(
             'Choose Your Theme',
-            style: GoogleFonts.montserrat(  
+            style: GoogleFonts.montserrat(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF0077B6),  
+              color: const Color(0xFF0077B6),
             ),
           ),
           Text(
             'Personalize your experience',
-            style: GoogleFonts.montserrat(  
+            style: GoogleFonts.montserrat(
               fontSize: 16,
               color: Colors.grey[600],
               fontWeight: FontWeight.w500,
@@ -227,9 +238,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      if (widget.onComplete != null) {
-                        widget.onComplete!(_nameController.text, _isDarkMode);
-                      }
+                      onComplete(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0077B6),
@@ -270,14 +279,12 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
         padding: const EdgeInsets.all(24),
         width: 140,
         decoration: BoxDecoration(
-          color: isSelected 
+          color: isSelected
               ? const Color(0xFF0077B6).withOpacity(0.1)
               : Colors.grey[100],
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected 
-                ? const Color(0xFF0077B6)
-                : Colors.transparent,
+            color: isSelected ? const Color(0xFF0077B6) : Colors.transparent,
             width: 2,
           ),
         ),
@@ -287,9 +294,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
               duration: const Duration(milliseconds: 300),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? const Color(0xFF0077B6)
-                    : Colors.white,
+                color: isSelected ? const Color(0xFF0077B6) : Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -304,9 +309,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
               child: Icon(
                 isDark ? Icons.dark_mode : Icons.light_mode,
                 size: 32,
-                color: isSelected
-                    ? Colors.white
-                    : const Color(0xFF0077B6),
+                color: isSelected ? Colors.white : const Color(0xFF0077B6),
               ),
             ),
             const SizedBox(height: 16),
@@ -314,12 +317,8 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
               isDark ? 'Dark Mode' : 'Light Mode',
               style: GoogleFonts.montserrat(
                 fontSize: 14,
-                color: isSelected
-                    ? const Color(0xFF0077B6)
-                    : Colors.grey[600],
-                fontWeight: isSelected
-                    ? FontWeight.w600
-                    : FontWeight.w500,
+                color: isSelected ? const Color(0xFF0077B6) : Colors.grey[600],
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
               ),
             ),
             const SizedBox(height: 8),
@@ -343,9 +342,19 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
       height: 8,
       width: _currentPage == index ? 24 : 8,
       decoration: BoxDecoration(
-        color: _currentPage == index ? const Color(0xFF0077B6) : Colors.grey[300],
+        color:
+            _currentPage == index ? const Color(0xFF0077B6) : Colors.grey[300],
         borderRadius: BorderRadius.circular(4),
       ),
     );
+  }
+
+  void onComplete(context) {
+    final FirstTimeSetupBloc firstTimeBloc =
+        BlocProvider.of<FirstTimeSetupBloc>(context);
+    user.name = _nameController.text;
+    user.theme = _isDarkMode;
+    sharedPref.saveUser(user);
+    firstTimeBloc.add(SetupEvent.completeSetup);
   }
 }

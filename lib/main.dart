@@ -2,15 +2,18 @@ import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:mcprj/data/shared_preference.dart';
+import 'package:mcprj/presentation/blocs/first_time_bloc/first_time_bloc.dart';
+import 'package:mcprj/presentation/screens/first_time.dart';
 import 'firebase_options.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mcprj/presentation/blocs/bloc/user_auth_bloc.dart';
+import 'package:mcprj/presentation/blocs/auth_bloc/user_auth_bloc.dart';
 import 'package:mcprj/presentation/screens/login.dart';
 import 'presentation/screens/main_dashboard.dart';
 import 'presentation/screens/translate_sign_to_text.dart';
 import 'presentation/screens/emotion_detection.dart';
 import 'presentation/screens/settings_page.dart';
-import'presentation/screens/splash_screen.dart'; // Import the file where the MainDashboard is defined
+import 'presentation/screens/splash_screen.dart'; // Import the file where the MainDashboard is defined
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +35,10 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => Authentication(),
+        '/': (context) => BlocProvider(
+              create: (context) => FirstTimeSetupBloc(),
+              child: FirstTimeWidget(),
+            ),
         '/signToText': (context) => TranslateSignToTextScreen(),
         '/textToSign': (context) => PlaceholderScreen('Text to Sign Language'),
         '/settings': (context) => SettingsPage(),
@@ -96,7 +102,7 @@ class Authentication extends StatelessWidget {
           } else if (state is AuthError) {
             return Text("Error: ${state.message}");
           } else if (state is AuthAuthenticated) {
-            return MainDashboard();
+            return FirstTimeWidget();
           } else {
             return Text("Unknown state: $state");
           }
@@ -107,6 +113,31 @@ class Authentication extends StatelessWidget {
               SnackBar(content: Text(state.message)),
             );
           }
+        },
+      ),
+    );
+  }
+}
+
+class FirstTimeWidget extends StatelessWidget {
+  const FirstTimeWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final FirstTimeSetupBloc setupBloc =
+        BlocProvider.of<FirstTimeSetupBloc>(context);
+    return Center(
+      child: BlocBuilder<FirstTimeSetupBloc, SetupState>(
+        builder: (context, state) {
+          if (state == SetupState.initial) {
+            setupBloc.add(SetupEvent.startSetup);
+          }
+          if (state == SetupState.inProgress) {
+            return OnboardingFlow();
+          } else if (state == SetupState.completed) {
+            return MainDashboard();
+          }
+          return Container();
         },
       ),
     );

@@ -11,8 +11,6 @@ class UserAccountPage extends StatefulWidget {
 class _UserAccountPageState extends State<UserAccountPage> {
   UserProfile userProfile = UserProfile(
     name: 'Alex Johnson',
-    email: 'alex.johnson@email.com',
-    phoneNumber: '+1 234 567 8900',
   );
 
   @override
@@ -86,24 +84,24 @@ class _UserAccountPageState extends State<UserAccountPage> {
                           ),
                         ),
                         SizedBox(height: 4),
-                        Text(
-                          userProfile.email,
-                          style: GoogleFonts.montserrat(
-                            fontSize: 14,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        if (userProfile.phoneNumber != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              userProfile.phoneNumber!,
-                              style: GoogleFonts.montserrat(
-                                fontSize: 14,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ),
+                        // Text(
+                        //   userProfile.email,
+                        //   style: GoogleFonts.montserrat(
+                        //     fontSize: 14,
+                        //     color: Colors.black87,
+                        //   ),
+                        // ),
+                        // if (userProfile.phoneNumber != null)
+                        //   Padding(
+                        //     padding: const EdgeInsets.only(top: 4),
+                        //     child: Text(
+                        //       userProfile.phoneNumber!,
+                        //       style: GoogleFonts.montserrat(
+                        //         fontSize: 14,
+                        //         color: Colors.black54,
+                        //       ),
+                        //     ),
+                        //   ),
                       ],
                     ),
                   ),
@@ -212,8 +210,6 @@ class _UserAccountPageState extends State<UserAccountPage> {
       context: context,
       builder: (BuildContext context) {
         String name = userProfile.name;
-        String email = userProfile.email;
-        String phone = userProfile.phoneNumber ?? '';
 
         return AlertDialog(
           shape: RoundedRectangleBorder(
@@ -231,7 +227,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Name',
                     icon: Icon(Icons.person, color: Color(0xFF0077B6)),
                     focusedBorder: UnderlineInputBorder(
@@ -241,30 +237,30 @@ class _UserAccountPageState extends State<UserAccountPage> {
                   controller: TextEditingController(text: name),
                   onChanged: (value) => name = value,
                 ),
-                SizedBox(height: 16),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    icon: Icon(Icons.email, color: Color(0xFF0077B6)),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xFF0077B6)),
-                    ),
-                  ),
-                  controller: TextEditingController(text: email),
-                  onChanged: (value) => email = value,
-                ),
-                SizedBox(height: 16),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Phone',
-                    icon: Icon(Icons.phone, color: Color(0xFF0077B6)),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Color(0xFF0077B6)),
-                    ),
-                  ),
-                  controller: TextEditingController(text: phone),
-                  onChanged: (value) => phone = value,
-                ),
+                const SizedBox(height: 16),
+                // TextField(
+                //   decoration: InputDecoration(
+                //     labelText: 'Email',
+                //     icon: Icon(Icons.email, color: Color(0xFF0077B6)),
+                //     focusedBorder: UnderlineInputBorder(
+                //       borderSide: BorderSide(color: Color(0xFF0077B6)),
+                //     ),
+                //   ),
+                //   controller: TextEditingController(text: email),
+                //   onChanged: (value) => email = value,
+                // ),
+                // SizedBox(height: 16),
+                // TextField(
+                //   decoration: InputDecoration(
+                //     labelText: 'Phone',
+                //     icon: Icon(Icons.phone, color: Color(0xFF0077B6)),
+                //     focusedBorder: UnderlineInputBorder(
+                //       borderSide: BorderSide(color: Color(0xFF0077B6)),
+                //     ),
+                //   ),
+                //   controller: TextEditingController(text: phone),
+                //   onChanged: (value) => phone = value,
+                // ),
               ],
             ),
           ),
@@ -285,8 +281,6 @@ class _UserAccountPageState extends State<UserAccountPage> {
                 setState(() {
                   userProfile = UserProfile(
                     name: name,
-                    email: email,
-                    phoneNumber: phone,
                   );
                 });
                 Navigator.pop(context);
@@ -333,14 +327,14 @@ class _UserAccountPageState extends State<UserAccountPage> {
                 'Logout',
                 style: GoogleFonts.montserrat(),
               ),
-             onPressed: () {
-  Navigator.pop(context);
-  Navigator.pushNamedAndRemoveUntil(
-    context,
-    '/',
-    (route) => false,
-  );
-},
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/',
+                  (route) => false,
+                );
+              },
             ),
           ],
         );
