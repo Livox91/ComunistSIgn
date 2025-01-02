@@ -9,7 +9,8 @@ import 'package:mcprj/presentation/screens/login.dart';
 import 'presentation/screens/main_dashboard.dart';
 import 'presentation/screens/translate_sign_to_text.dart';
 import 'presentation/screens/emotion_detection.dart';
-import 'presentation/screens/settings_page.dart'; // Import the file where the MainDashboard is defined
+import 'presentation/screens/settings_page.dart';
+import'presentation/screens/splash_screen.dart'; // Import the file where the MainDashboard is defined
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -91,7 +92,7 @@ class Authentication extends StatelessWidget {
           if (state is AuthInitial) {
             return LoginPage();
           } else if (state is AuthLoading) {
-            return CircularProgressIndicator();
+            return SplashScreen();
           } else if (state is AuthError) {
             return Text("Error: ${state.message}");
           } else if (state is AuthAuthenticated) {
