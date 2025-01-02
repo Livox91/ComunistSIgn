@@ -65,11 +65,12 @@ def classify_gesture(landmarks):
         0.1 < fingers_distance(4, 8) < 0.3):
         return "C"
     
-    # D - Index up, others curved
-    if (is_finger_extended(8, 6) and 
+    # D - Modified for better detection
+    if (is_finger_extended(8, 6) and  # Index up
         all(is_finger_curled(tip, pip, mcp) for tip, pip, mcp in 
-            [(12,10,9), (16,14,13), (20,18,17)]) and
-        thumb_across_palm()):
+            [(12,10,9), (16,14,13), (20,18,17)]) and  # Others curled
+        landmarks[4]['x'] > landmarks[5]['x'] and  # Thumb position
+        landmarks[4]['y'] > landmarks[8]['y']):  # Thumb below index
         return "D"
     
     # E - All fingers curled
@@ -115,10 +116,11 @@ def classify_gesture(landmarks):
             [(12,10,9), (16,14,13), (20,18,17)])):
         return "L"
     
-    # M - Three fingers over thumb
-    if (all(is_finger_curled(tip, pip, mcp) for tip, pip, mcp in 
-           [(8,6,5), (12,10,9), (16,14,13)]) and
-        not thumb_is_out()):
+    # M - Modified for better detection
+    if (landmarks[4]['y'] > landmarks[3]['y'] and  # Thumb tucked
+        all(landmarks[tip]['y'] > landmarks[base]['y']  # Three fingers folded
+            for base, tip in [(6, 8), (10, 12), (14, 16)]) and
+        landmarks[20]['y'] > landmarks[18]['y']):  # Pinky folded
         return "M"
     
     # N - Two fingers over thumb
@@ -132,10 +134,12 @@ def classify_gesture(landmarks):
     if (all(fingers_distance(4, tip) < 0.1 for tip in [8, 12, 16, 20])):
         return "O"
     
-    # P - Down pointing K
-    if (not is_finger_extended(8, 6) and thumb_is_out() and
+    # P - Modified for better detection
+    if (landmarks[8]['y'] > landmarks[6]['y'] and  # Index pointing down
         all(is_finger_curled(tip, pip, mcp) for tip, pip, mcp in 
-            [(12,10,9), (16,14,13), (20,18,17)])):
+            [(12,10,9), (16,14,13), (20,18,17)]) and  # Others curled
+        thumb_is_out() and  # Thumb extended
+        landmarks[4]['x'] < landmarks[5]['x']):  # Thumb away from palm
         return "P"
     
     # Q - Down pointing G
@@ -149,16 +153,19 @@ def classify_gesture(landmarks):
         fingers_distance(8, 12) < 0.05):
         return "R"
     
-    # S - Closed fist
-    if (all(is_finger_curled(tip, pip, mcp) for tip, pip, mcp in 
-           [(8,6,5), (12,10,9), (16,14,13), (20,18,17)]) and
+    # S - Modified for better detection
+    if (all(landmarks[tip]['y'] > landmarks[base]['y']
+            for base, tip in [(6, 8), (10, 12), (14, 16), (18, 20)]) and
         thumb_across_palm()):
         return "S"
     
-    # T - Index knuckle with thumb
-    if (is_finger_curled(8, 6, 5) and thumb_between_fingers() and
+    # T - Modified for better detection
+    if ((landmarks[8]['y'] > landmarks[6]['y'] and  # Index knuckle bent
+         landmarks[6]['y'] > landmarks[5]['y']) and
         all(is_finger_curled(tip, pip, mcp) for tip, pip, mcp in 
-            [(12,10,9), (16,14,13), (20,18,17)])):
+            [(12,10,9), (16,14,13), (20,18,17)]) and  # Others curled
+        landmarks[4]['x'] > landmarks[5]['x'] and  # Thumb placement
+        landmarks[4]['x'] < landmarks[9]['x']):
         return "T"
     
     # U - Two fingers up together
@@ -177,10 +184,11 @@ def classify_gesture(landmarks):
         not is_finger_extended(20, 18)):
         return "W"
     
-    # X - Hook index
-    if (not is_finger_extended(8, 6) and is_finger_curled(8, 6, 5) and
+    # X - Modified for better detection
+    if ((landmarks[8]['y'] > landmarks[7]['y'] and  # Index hooked
+         landmarks[7]['y'] < landmarks[6]['y']) and
         all(is_finger_curled(tip, pip, mcp) for tip, pip, mcp in 
-            [(12,10,9), (16,14,13), (20,18,17)])):
+            [(12,10,9), (16,14,13), (20,18,17)])):  # Others curled
         return "X"
     
     # Y - Horns
@@ -190,6 +198,8 @@ def classify_gesture(landmarks):
         return "Y"
     
     return "Unknown"
+
+# Rest of your existing code remains the same...
 
 def match_phrase(gesture_sequence):
     """
@@ -315,7 +325,7 @@ def process_frame():
         return jsonify(response)
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'Detecting....'}), 500
 
 @app.route('/process/emotion', methods=['POST'])
 def process_emotion():
@@ -346,7 +356,7 @@ def process_emotion():
             return jsonify({'error': 'Could not determine emotion'}), 400
             
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'Detecting....'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

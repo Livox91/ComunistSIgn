@@ -77,7 +77,7 @@ flutter:
     - assets/thank_you.mp4
     - assets/please.mp4
     - assets/sorry.mp4
-    - assets/help.mp4
+    # - assets/help.mp4
     - assets/under_construction.json
     - assets/emotion.json
     - assets/welcome.json
