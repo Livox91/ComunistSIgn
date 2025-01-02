@@ -80,6 +80,9 @@ flutter:
     - assets/help.mp4
     - assets/under_construction.json
     - assets/emotion.json
+    - assets/welcome.json
+    - assets/name.json
+    - assets/theme.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
