@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mcprj/data/shared_preference.dart';
 import 'package:mcprj/domain/user_model.dart';
+import 'package:mcprj/presentation/blocs/auth_bloc/user_auth_bloc.dart';
 import 'settings_page.dart';
 
 class UserAccountPage extends StatefulWidget {
@@ -9,9 +12,14 @@ class UserAccountPage extends StatefulWidget {
 }
 
 class _UserAccountPageState extends State<UserAccountPage> {
-  UserProfile userProfile = UserProfile(
-    name: 'Alex Johnson',
-  );
+  SharedPref sharedpref = SharedPref();
+  late final UserProfile? userProfile;
+
+  @override
+  void initState() async {
+    userProfile = await sharedpref.getUser();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +84,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          userProfile.name,
+                          userProfile?.name ?? "",
                           style: GoogleFonts.montserrat(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -209,7 +217,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        String name = userProfile.name;
+        String name = userProfile?.name ?? "";
 
         return AlertDialog(
           shape: RoundedRectangleBorder(
@@ -282,7 +290,9 @@ class _UserAccountPageState extends State<UserAccountPage> {
                   userProfile = UserProfile(
                     name: name,
                   );
+                  sharedpref.saveUser(userProfile!);
                 });
+
                 Navigator.pop(context);
               },
             ),
@@ -328,10 +338,12 @@ class _UserAccountPageState extends State<UserAccountPage> {
                 style: GoogleFonts.montserrat(),
               ),
               onPressed: () {
+                BlocProvider.of<UserAuthBloc>(context)
+                    .add(AuthSignOutRequested());
                 Navigator.pop(context);
                 Navigator.pushNamedAndRemoveUntil(
                   context,
-                  '/',
+                  '/Login',
                   (route) => false,
                 );
               },

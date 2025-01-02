@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mcprj/data/shared_preference.dart';
+import 'package:mcprj/domain/user_model.dart';
 import 'package:mcprj/presentation/themes/text_styles.dart';
 import 'translate_sign_to_text.dart';
 import 'emotion_detection.dart';
@@ -9,9 +11,22 @@ import '../../text_to_sign.dart';
 import 'package:mcprj/presentation/builders/build_feature_cards.dart';
 
 // Header Section Widget
-class HeaderSection extends StatelessWidget {
-  const HeaderSection({super.key});
-  final String userName = 'Alex Johnson';
+class HeaderSection extends StatefulWidget {
+  HeaderSection({super.key});
+
+  @override
+  State<HeaderSection> createState() => _HeaderSectionState();
+}
+
+class _HeaderSectionState extends State<HeaderSection> {
+  final SharedPref sharedPref = SharedPref();
+  late UserProfile? user;
+  @override
+  void initState() async {
+    user = await sharedPref.getUser();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -21,7 +36,7 @@ class HeaderSection extends StatelessWidget {
         children: [
           const GreyMontserratw500f22(text: 'Hello again,'),
           const SizedBox(height: 5),
-          BlackMontserratf28wBold(text: userName),
+          BlackMontserratf28wBold(text: user?.name ?? ""),
           const SizedBox(height: 5),
           const BlueMontserratf36wBold(text: 'CommuniSign'),
         ],
@@ -82,7 +97,7 @@ class DashboardContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const HeaderSection(),
+          HeaderSection(),
           const SizedBox(height: 20),
           const HorizontalFeatureCards(),
           const SizedBox(height: 30),

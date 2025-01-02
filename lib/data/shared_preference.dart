@@ -13,11 +13,8 @@ class SharedPref {
   Future<UserProfile?> getUser() async {
     final prefs = await SharedPreferences.getInstance();
     final userJson = prefs.getString(_userKey);
-
-    if (userJson != null) {
-      return UserProfile.fromRawJson(userJson);
-    }
-    return null;
+    final user = userJson != null ? UserProfile.fromRawJson(userJson) : null;
+    return user;
   }
 
   Future<void> setFirstTimeUser() async {

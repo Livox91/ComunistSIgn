@@ -35,14 +35,12 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => BlocProvider(
-              create: (context) => FirstTimeSetupBloc(),
-              child: FirstTimeWidget(),
-            ),
+        '/': (context) => Authentication(),
         '/signToText': (context) => TranslateSignToTextScreen(),
         '/textToSign': (context) => PlaceholderScreen('Text to Sign Language'),
         '/settings': (context) => SettingsPage(),
         '/emotionDetection': (context) => EmotionDetectionScreen(),
+        '/Login': (context) => Authentication(),
       },
     );
   }
@@ -102,7 +100,9 @@ class Authentication extends StatelessWidget {
           } else if (state is AuthError) {
             return Text("Error: ${state.message}");
           } else if (state is AuthAuthenticated) {
-            return FirstTimeWidget();
+            return BlocProvider(
+                create: (context) => FirstTimeSetupBloc(),
+                child: FirstTimeWidget());
           } else {
             return Text("Unknown state: $state");
           }
