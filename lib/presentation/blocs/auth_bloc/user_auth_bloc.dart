@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -13,6 +13,7 @@ class UserAuthBloc extends Bloc<AuthEvent, UserAuthState> {
     on<AuthSignUpRequested>(_onSignUp);
     on<AuthSignInRequested>(_onSignIn);
     on<AuthSignOutRequested>(_onSignOut);
+    on<AuthCheckRequested>(_onCheck);
   }
 
   Future<void> _onSignUp(
@@ -52,5 +53,10 @@ class UserAuthBloc extends Bloc<AuthEvent, UserAuthState> {
     } catch (e) {
       emit(AuthError(e.toString()));
     }
+  }
+
+  Future<void> _onCheck(
+      AuthCheckRequested event, Emitter<UserAuthState> emit) async {
+    emit(AuthAuthenticated());
   }
 }

@@ -27,6 +27,11 @@ class SharedPref {
     return prefs.getBool(_firstTimeKey) ?? true;
   }
 
+  Future<bool> hasUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.containsKey(_userKey);
+  }
+
   /// Remove user data from Shared Preferences
   Future<void> removeUser() async {
     final prefs = await SharedPreferences.getInstance();

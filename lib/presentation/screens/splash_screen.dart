@@ -10,7 +10,8 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   late AnimationController _mainController;
   late AnimationController _pulseController;
   late AnimationController _rotatingController;
@@ -20,11 +21,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
   @override
   void initState() {
-    super.initState();
-    
     // Main animation controller
     _mainController = AnimationController(
-      duration: const Duration(milliseconds: 4000),
+      duration: const Duration(seconds: 3),
       vsync: this,
     );
 
@@ -57,17 +56,21 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     );
 
     // Pulse animation for outer ring
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(_pulseController);
+    _pulseAnimation =
+        Tween<double>(begin: 1.0, end: 1.1).animate(_pulseController);
 
     // Start animations
     _mainController.forward();
 
     // Navigate to home screen after animation
-    Future.delayed(const Duration(milliseconds: 4000), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) =>  MainDashboard()),
-      );
+    _mainController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => MainDashboard()),
+        );
+      }
     });
+    super.initState();
   }
 
   @override
@@ -84,7 +87,8 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       backgroundColor: Colors.white,
       body: Center(
         child: AnimatedBuilder(
-          animation: Listenable.merge([_mainController, _pulseController, _rotatingController]),
+          animation: Listenable.merge(
+              [_mainController, _pulseController, _rotatingController]),
           builder: (context, child) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -182,7 +186,8 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                         height: 40,
                         child: CircularProgressIndicator(
                           strokeWidth: 3,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.shade400),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.blue.shade400),
                         ),
                       ),
                     ],

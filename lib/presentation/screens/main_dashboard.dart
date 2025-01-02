@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mcprj/data/shared_preference.dart';
 import 'package:mcprj/domain/user_model.dart';
+import 'package:mcprj/presentation/blocs/auth_bloc/user_auth_bloc.dart';
 import 'package:mcprj/presentation/screens/settings_page.dart';
 import 'package:mcprj/presentation/themes/text_styles.dart';
 import 'translate_sign_to_text.dart';

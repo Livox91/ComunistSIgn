@@ -1,0 +1,2 @@
+C:/Users/HP/Documents/Projects/ComuniSign/android/app/.cxx/RelWithDebInfo/3j693u2j/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/HP/Documents/Projects/ComuniSign/android/app/.cxx/RelWithDebInfo/3j693u2j/armeabi-v7a/CMakeFiles/rebuild_cache.dir

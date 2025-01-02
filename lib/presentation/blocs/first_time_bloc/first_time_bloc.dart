@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:mcprj/data/shared_preference.dart';
 
 enum SetupEvent { startSetup, completeSetup }
@@ -15,6 +14,7 @@ class FirstTimeSetupBloc extends Bloc<SetupEvent, SetupState> {
   void mapEventsToState(SetupEvent e, Emitter<SetupState> emit) async {
     if (e == SetupEvent.startSetup) {
       final isFirstTime = await sharedPref.isFirstTimeUser();
+      print("isFirstTime: $isFirstTime");
       if (isFirstTime) {
         emit(SetupState.inProgress);
       } else {

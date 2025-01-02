@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:mcprj/data/shared_preference.dart';
 import 'package:mcprj/presentation/blocs/first_time_bloc/first_time_bloc.dart';
+import 'package:mcprj/presentation/blocs/theme_bloc/theme_cubit.dart';
 import 'package:mcprj/presentation/screens/first_time.dart';
 import 'firebase_options.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,21 +27,27 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Communication Bridge',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
+    return BlocProvider(
+      create: (context) => ThemeCubit()..loadTheme(),
+      child: BlocBuilder<ThemeCubit, ThemeData>(
+        builder: (context, theme) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Communication Bridge',
+            theme: theme,
+            initialRoute: '/',
+            routes: {
+              '/': (context) => Authentication(),
+              '/signToText': (context) => TranslateSignToTextScreen(),
+              '/textToSign': (context) =>
+                  PlaceholderScreen('Text to Sign Language'),
+              '/settings': (context) => SettingsPage(),
+              '/emotionDetection': (context) => EmotionDetectionScreen(),
+              '/Login': (context) => Authentication(),
+            },
+          );
+        },
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => Authentication(),
-        '/signToText': (context) => TranslateSignToTextScreen(),
-        '/textToSign': (context) => PlaceholderScreen('Text to Sign Language'),
-        '/settings': (context) => SettingsPage(),
-        '/emotionDetection': (context) => EmotionDetectionScreen(),
-        '/Login': (context) => Authentication(),
-      },
     );
   }
 }
@@ -82,25 +90,57 @@ class ExitScreen extends StatelessWidget {
   }
 }
 
-class Authentication extends StatelessWidget {
-  const Authentication({super.key});
+class Authentication extends StatefulWidget {
+  Authentication({super.key});
+
+  @override
+  State<Authentication> createState() => _AuthenticationState();
+}
+
+class _AuthenticationState extends State<Authentication> {
+  final sharedPref = SharedPref();
+
+  bool hasUserdata = false;
+
+  void checkUserData() async {
+    hasUserdata = await sharedPref.hasUserData();
+    setState(() {
+      hasUserdata = hasUserdata;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => UserAuthBloc(FirebaseAuth.instance),
+    checkUserData();
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<UserAuthBloc>(
+          create: (context) => UserAuthBloc(FirebaseAuth.instance),
+        ),
+        BlocProvider<ThemeCubit>(
+            create: (context) => ThemeCubit()..loadTheme()),
+      ],
       child: BlocConsumer<UserAuthBloc, UserAuthState>(
         builder: (context, state) {
           if (state is AuthInitial) {
-            return LoginPage();
+            if (hasUserdata == false) {
+              return LoginPage();
+            } else {
+              BlocProvider.of<UserAuthBloc>(context).add(AuthCheckRequested());
+              return MainDashboard();
+            }
           } else if (state is AuthLoading) {
             return SplashScreen();
           } else if (state is AuthError) {
             return Text("Error: ${state.message}");
           } else if (state is AuthAuthenticated) {
-            return BlocProvider(
+            return MultiBlocProvider(providers: [
+              BlocProvider<ThemeCubit>(
+                  create: (context) => ThemeCubit()..loadTheme()),
+              BlocProvider<FirstTimeSetupBloc>(
                 create: (context) => FirstTimeSetupBloc(),
-                child: FirstTimeWidget());
+              ),
+            ], child: const FirstTimeWidget());
           } else {
             return Text("Unknown state: $state");
           }
@@ -131,10 +171,18 @@ class FirstTimeWidget extends StatelessWidget {
             setupBloc.add(SetupEvent.startSetup);
           }
           if (state == SetupState.inProgress) {
-            print("Hello from State");
             return OnboardingFlow();
           } else if (state == SetupState.completed) {
-            return MainDashboard();
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider<UserAuthBloc>(
+                  create: (context) => UserAuthBloc(FirebaseAuth.instance),
+                ),
+                BlocProvider<ThemeCubit>(
+                    create: (context) => ThemeCubit()..loadTheme()),
+              ],
+              child: MainDashboard(),
+            );
           }
           return Container();
         },

@@ -11,6 +11,8 @@ class AuthLoading extends UserAuthState {}
 
 class AuthAuthenticated extends UserAuthState {}
 
+class AuthCheck extends UserAuthState {}
+
 class AuthError extends UserAuthState {
   final String message;
 

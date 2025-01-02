@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -285,9 +286,8 @@ class _UserAccountPageState extends State<UserAccountPage> {
                   widget.userProfile = UserProfile(
                     name: name,
                   );
-                  sharedpref.saveUser(widget.userProfile!);
                 });
-
+                setUserData();
                 Navigator.pop(context);
               },
             ),
@@ -297,7 +297,13 @@ class _UserAccountPageState extends State<UserAccountPage> {
     );
   }
 
+  void setUserData() async {
+    await sharedpref.removeUser();
+    await sharedpref.saveUser(widget.userProfile!);
+  }
+
   void _showLogoutDialog(BuildContext context) {
+    final authBloc = BlocProvider.of<UserAuthBloc>(context);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -333,14 +339,15 @@ class _UserAccountPageState extends State<UserAccountPage> {
                 style: GoogleFonts.montserrat(),
               ),
               onPressed: () {
-                BlocProvider.of<UserAuthBloc>(context)
-                    .add(AuthSignOutRequested());
+                authBloc.add(AuthSignOutRequested());
+                sharedpref.removeUser();
                 Navigator.pop(context);
                 Navigator.pushNamedAndRemoveUntil(
                   context,
                   '/Login',
                   (route) => false,
                 );
+                print('Logged out');
               },
             ),
           ],

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mcprj/data/shared_preference.dart';
 import 'package:mcprj/presentation/blocs/auth_bloc/user_auth_bloc.dart';
 import 'package:mcprj/presentation/screens/main_dashboard.dart';
 
@@ -15,6 +16,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final sharedPref = SharedPref();
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -123,13 +125,6 @@ class _LoginPageState extends State<LoginPage> {
                       height: 55,
                       child: ElevatedButton(
                         onPressed: () {
-                          // if (_formKey.currentState?.validate() ?? false) {
-                          //   Navigator.pushReplacement(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => MainDashboard()),
-                          //   );
-                          // }
                           auth.add(
                             AuthSignInRequested(
                               _emailController.text,

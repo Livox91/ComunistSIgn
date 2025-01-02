@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mcprj/presentation/blocs/auth_bloc/user_auth_bloc.dart';
-import 'login.dart';
 
 class SignupPage extends StatefulWidget {
   @override
@@ -12,7 +11,7 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  // final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -49,33 +48,33 @@ class _SignupPageState extends State<SignupPage> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: 'Full Name',
-                        labelStyle: TextStyle(color: Colors.grey.shade600),
-                        prefixIcon:
-                            Icon(Icons.person, color: Color(0xFF0077B6)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide(color: Color(0xFFB2D7F0)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide(color: Color(0xFFB2D7F0)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide(color: Color(0xFF0077B6)),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value?.isEmpty ?? true) {
-                          return 'Please enter your name';
-                        }
-                        return null;
-                      },
-                    ),
+                    // TextFormField(
+                    //   controller: _nameController,
+                    //   decoration: InputDecoration(
+                    //     labelText: 'Full Name',
+                    //     labelStyle: TextStyle(color: Colors.grey.shade600),
+                    //     prefixIcon:
+                    //         Icon(Icons.person, color: Color(0xFF0077B6)),
+                    //     border: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.circular(15),
+                    //       borderSide: BorderSide(color: Color(0xFFB2D7F0)),
+                    //     ),
+                    //     enabledBorder: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.circular(15),
+                    //       borderSide: BorderSide(color: Color(0xFFB2D7F0)),
+                    //     ),
+                    //     focusedBorder: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.circular(15),
+                    //       borderSide: BorderSide(color: Color(0xFF0077B6)),
+                    //     ),
+                    //   ),
+                    //   validator: (value) {
+                    //     if (value?.isEmpty ?? true) {
+                    //       return 'Please enter your name';
+                    //     }
+                    //     return null;
+                    //   },
+                    // ),
                     const SizedBox(height: 20),
                     TextFormField(
                       controller: _emailController,
