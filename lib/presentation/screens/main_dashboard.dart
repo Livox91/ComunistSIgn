@@ -20,11 +20,15 @@ class HeaderSection extends StatefulWidget {
 
 class _HeaderSectionState extends State<HeaderSection> {
   final SharedPref sharedPref = SharedPref();
-  late UserProfile? user;
+  late UserProfile? user = UserProfile(name: "");
   @override
-  void initState() async {
-    user = await sharedPref.getUser();
+  void initState() {
+    setuserProfile();
     super.initState();
+  }
+
+  void setuserProfile() async {
+    user = await sharedPref.getUser();
   }
 
   @override

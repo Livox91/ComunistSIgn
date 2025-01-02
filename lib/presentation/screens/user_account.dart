@@ -13,12 +13,16 @@ class UserAccountPage extends StatefulWidget {
 
 class _UserAccountPageState extends State<UserAccountPage> {
   SharedPref sharedpref = SharedPref();
-  late final UserProfile? userProfile;
+  late UserProfile? userProfile = UserProfile(name: "");
 
   @override
-  void initState() async {
-    userProfile = await sharedpref.getUser();
+  void initState() {
+    setuserProfile();
     super.initState();
+  }
+
+  void setuserProfile() async {
+    userProfile = await sharedpref.getUser();
   }
 
   @override
