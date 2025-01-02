@@ -1,8 +1,6 @@
-import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:mcprj/data/shared_preference.dart';
 import 'package:mcprj/presentation/blocs/first_time_bloc/first_time_bloc.dart';
 import 'package:mcprj/presentation/screens/first_time.dart';
 import 'firebase_options.dart';
@@ -133,6 +131,7 @@ class FirstTimeWidget extends StatelessWidget {
             setupBloc.add(SetupEvent.startSetup);
           }
           if (state == SetupState.inProgress) {
+            print("Hello from State");
             return OnboardingFlow();
           } else if (state == SetupState.completed) {
             return MainDashboard();

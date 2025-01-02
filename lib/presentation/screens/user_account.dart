@@ -7,24 +7,15 @@ import 'package:mcprj/presentation/blocs/auth_bloc/user_auth_bloc.dart';
 import 'settings_page.dart';
 
 class UserAccountPage extends StatefulWidget {
+  late UserProfile? userProfile;
+  UserAccountPage({Key? key, UserProfile? this.userProfile}) : super(key: key);
+
   @override
   _UserAccountPageState createState() => _UserAccountPageState();
 }
 
 class _UserAccountPageState extends State<UserAccountPage> {
   SharedPref sharedpref = SharedPref();
-  late UserProfile? userProfile = UserProfile(name: "");
-
-  @override
-  void initState() {
-    setuserProfile();
-    super.initState();
-  }
-
-  void setuserProfile() async {
-    userProfile = await sharedpref.getUser();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,7 +79,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          userProfile?.name ?? "",
+                          widget.userProfile?.name ?? "",
                           style: GoogleFonts.montserrat(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -221,7 +212,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        String name = userProfile?.name ?? "";
+        String name = widget.userProfile?.name ?? "";
 
         return AlertDialog(
           shape: RoundedRectangleBorder(
@@ -291,10 +282,10 @@ class _UserAccountPageState extends State<UserAccountPage> {
               child: Text('Save'),
               onPressed: () {
                 setState(() {
-                  userProfile = UserProfile(
+                  widget.userProfile = UserProfile(
                     name: name,
                   );
-                  sharedpref.saveUser(userProfile!);
+                  sharedpref.saveUser(widget.userProfile!);
                 });
 
                 Navigator.pop(context);

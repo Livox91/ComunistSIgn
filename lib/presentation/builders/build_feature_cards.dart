@@ -99,57 +99,6 @@ Widget buildUpcomingFeatureCard(
   );
 }
 
-Widget buildDrawer(BuildContext context) {
-  return Drawer(
-    child: Container(
-      color: const Color(0xFFB2D7F0),
-      child: Column(
-        children: [
-          const SizedBox(height: 50),
-          const CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.white,
-            child: Icon(Icons.person, size: 50, color: Color(0xFF0077B6)),
-          ),
-          const SizedBox(height: 20),
-          const WhiteMontserratf22wBold(text: "userName"),
-          const SizedBox(height: 10),
-          const Divider(
-              color: Colors.white70, thickness: 1, indent: 20, endIndent: 20),
-          ListTile(
-            leading: const Icon(Icons.settings, color: Colors.white),
-            title: const Text(
-              'Settings',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingsPage()),
-              );
-            },
-          ),
-          const ListTile(
-            leading: Icon(Icons.help, color: Colors.white),
-            title: Text('Help',
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w500)),
-          ),
-          const ListTile(
-            leading: Icon(Icons.logout, color: Colors.white),
-            title: Text('Logout',
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w500)),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
 Widget buildControlButton({
   required VoidCallback? onPressed,
   required IconData icon,

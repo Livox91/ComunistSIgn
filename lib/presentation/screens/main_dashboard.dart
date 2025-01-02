@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mcprj/data/shared_preference.dart';
 import 'package:mcprj/domain/user_model.dart';
+import 'package:mcprj/presentation/screens/settings_page.dart';
 import 'package:mcprj/presentation/themes/text_styles.dart';
 import 'translate_sign_to_text.dart';
 import 'emotion_detection.dart';
@@ -11,25 +12,9 @@ import '../../text_to_sign.dart';
 import 'package:mcprj/presentation/builders/build_feature_cards.dart';
 
 // Header Section Widget
-class HeaderSection extends StatefulWidget {
-  HeaderSection({super.key});
-
-  @override
-  State<HeaderSection> createState() => _HeaderSectionState();
-}
-
-class _HeaderSectionState extends State<HeaderSection> {
-  final SharedPref sharedPref = SharedPref();
-  late UserProfile? user = UserProfile(name: "");
-  @override
-  void initState() {
-    setuserProfile();
-    super.initState();
-  }
-
-  void setuserProfile() async {
-    user = await sharedPref.getUser();
-  }
+class HeaderSection extends StatelessWidget {
+  final UserProfile? user;
+  const HeaderSection({super.key, UserProfile? this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +25,7 @@ class _HeaderSectionState extends State<HeaderSection> {
         children: [
           const GreyMontserratw500f22(text: 'Hello again,'),
           const SizedBox(height: 5),
-          BlackMontserratf28wBold(text: user?.name ?? ""),
+          BlackMontserratf28wBold(text: user?.name),
           const SizedBox(height: 5),
           const BlueMontserratf36wBold(text: 'CommuniSign'),
         ],
@@ -92,16 +77,23 @@ class HorizontalFeatureCards extends StatelessWidget {
 }
 
 // Dashboard Content
-class DashboardContent extends StatelessWidget {
-  const DashboardContent({super.key});
+class DashboardContent extends StatefulWidget {
+  final UserProfile? user;
 
+  const DashboardContent({super.key, UserProfile? this.user});
+
+  @override
+  State<DashboardContent> createState() => _DashboardContentState();
+}
+
+class _DashboardContentState extends State<DashboardContent> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          HeaderSection(),
+          HeaderSection(user: widget.user),
           const SizedBox(height: 20),
           const HorizontalFeatureCards(),
           const SizedBox(height: 30),
@@ -153,6 +145,19 @@ class MainDashboard extends StatefulWidget {
 }
 
 class _MainDashboardState extends State<MainDashboard> {
+  final SharedPref sharedPref = SharedPref();
+  late UserProfile? user = UserProfile(name: "");
+
+  @override
+  void initState() {
+    setuserProfile();
+    super.initState();
+  }
+
+  void setuserProfile() async {
+    user = await sharedPref.getUser();
+  }
+
   int _selectedIndex = 0;
 
   @override
@@ -170,9 +175,9 @@ class _MainDashboardState extends State<MainDashboard> {
       body: IndexedStack(
         index: _selectedIndex,
         children: [
-          const DashboardContent(),
+          DashboardContent(user: user),
           SearchPage(),
-          UserAccountPage(),
+          UserAccountPage(userProfile: user),
         ],
       ),
       bottomNavigationBar: Container(
@@ -215,6 +220,57 @@ class _MainDashboardState extends State<MainDashboard> {
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outline, size: 28),
               label: 'Profile',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildDrawer(BuildContext context) {
+    return Drawer(
+      child: Container(
+        color: const Color(0xFFB2D7F0),
+        child: Column(
+          children: [
+            const SizedBox(height: 50),
+            const CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.white,
+              child: Icon(Icons.person, size: 50, color: Color(0xFF0077B6)),
+            ),
+            const SizedBox(height: 20),
+            WhiteMontserratf22wBold(text: user?.name),
+            const SizedBox(height: 10),
+            const Divider(
+                color: Colors.white70, thickness: 1, indent: 20, endIndent: 20),
+            ListTile(
+              leading: const Icon(Icons.settings, color: Colors.white),
+              title: const Text(
+                'Settings',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                );
+              },
+            ),
+            const ListTile(
+              leading: Icon(Icons.help, color: Colors.white),
+              title: Text('Help',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w500)),
+            ),
+            const ListTile(
+              leading: Icon(Icons.logout, color: Colors.white),
+              title: Text('Logout',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w500)),
             ),
           ],
         ),
