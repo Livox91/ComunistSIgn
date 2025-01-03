@@ -22,7 +22,6 @@ class _SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     final authBloc = BlocProvider.of<UserAuthBloc>(context);
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [

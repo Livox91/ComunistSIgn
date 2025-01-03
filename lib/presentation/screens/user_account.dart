@@ -20,7 +20,6 @@ class _UserAccountPageState extends State<UserAccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -166,7 +165,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFFB2D7F0),
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
@@ -341,6 +340,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
               onPressed: () {
                 authBloc.add(AuthSignOutRequested());
                 sharedpref.removeUser();
+                sharedpref.setFirstTimeUsertoTrue();
                 Navigator.pop(context);
                 Navigator.pushNamedAndRemoveUntil(
                   context,

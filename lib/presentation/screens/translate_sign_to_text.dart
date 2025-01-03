@@ -159,7 +159,6 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
       body: Stack(
         children: [
           // Welcome Screen

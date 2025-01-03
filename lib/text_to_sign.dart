@@ -13,7 +13,7 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
   bool _isPlaying = false;
   bool _isLoading = false;
   String _errorMessage = '';
-  
+
   final Map<String, String> phraseVideos = {
     'Hello': 'assets/hello.mp4',
     'Thank you': 'assets/thank_you.mp4',
@@ -29,71 +29,71 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
   }
 
   Future<void> _playVideo(String phrase) async {
-  if (_isLoading) return;
-  
-  setState(() {
-    _isLoading = true;
-    _errorMessage = '';
-  });
+    if (_isLoading) return;
 
-  try {
-    // Dispose of previous controller
-    await _controller?.dispose();
-    
-    final videoPath = phraseVideos[phrase];
-    if (videoPath == null) {
-      throw Exception('Video path not found for phrase: $phrase');
-    }
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
 
-    _controller = VideoPlayerController.asset(
-      videoPath,
-      videoPlayerOptions: VideoPlayerOptions(
-        mixWithOthers: true,
-        allowBackgroundPlayback: false,
-      ),
-    );
+    try {
+      // Dispose of previous controller
+      await _controller?.dispose();
 
-    // Add error listener before initialization
-    _controller!.addListener(() {
-      final error = _controller!.value.errorDescription;
-      if (error != null && error.isNotEmpty) {
-        print('Video player error: $error');
+      final videoPath = phraseVideos[phrase];
+      if (videoPath == null) {
+        throw Exception('Video path not found for phrase: $phrase');
+      }
+
+      _controller = VideoPlayerController.asset(
+        videoPath,
+        videoPlayerOptions: VideoPlayerOptions(
+          mixWithOthers: true,
+          allowBackgroundPlayback: false,
+        ),
+      );
+
+      // Add error listener before initialization
+      _controller!.addListener(() {
+        final error = _controller!.value.errorDescription;
+        if (error != null && error.isNotEmpty) {
+          print('Video player error: $error');
+          setState(() {
+            _errorMessage = 'Error playing video: $error';
+            _isLoading = false;
+          });
+        }
+      });
+
+      // Initialize with error catching
+      await _controller!.initialize().catchError((error) {
+        print('Initialization error: $error');
         setState(() {
-          _errorMessage = 'Error playing video: $error';
+          _errorMessage = 'Could not load video. Please check asset files.';
           _isLoading = false;
         });
-      }
-    });
+        return;
+      });
 
-    // Initialize with error catching
-    await _controller!.initialize().catchError((error) {
-      print('Initialization error: $error');
       setState(() {
-        _errorMessage = 'Could not load video. Please check asset files.';
+        _selectedPhrase = phrase;
+        _isPlaying = true;
         _isLoading = false;
       });
-      return;
-    });
 
-    setState(() {
-      _selectedPhrase = phrase;
-      _isPlaying = true;
-      _isLoading = false;
-    });
-
-    await _controller!.play();
-  } catch (error) {
-    print('Error in _playVideo: $error');
-    setState(() {
-      _isLoading = false;
-      _errorMessage = 'Failed to load video. Please check assets and paths.';
-    });
+      await _controller!.play();
+    } catch (error) {
+      print('Error in _playVideo: $error');
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Failed to load video. Please check assets and paths.';
+      });
+    }
   }
-}
 
   Widget _buildPhraseCard(String phrase) {
     final isSelected = _selectedPhrase == phrase;
-    
+
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: GestureDetector(
@@ -156,7 +156,8 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
                       color: Color(0xFF0077B6),
                     ),
                   ),
-                if (!_isLoading && (_controller == null || !_controller!.value.isInitialized))
+                if (!_isLoading &&
+                    (_controller == null || !_controller!.value.isInitialized))
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -199,7 +200,6 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

@@ -22,6 +22,11 @@ class SharedPref {
     await prefs.setBool(_firstTimeKey, false);
   }
 
+  Future<void> setFirstTimeUsertoTrue() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_firstTimeKey, true);
+  }
+
   Future<bool> isFirstTimeUser() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_firstTimeKey) ?? true;

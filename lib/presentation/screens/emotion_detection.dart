@@ -120,7 +120,6 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
       body: Stack(
         children: [
           // Welcome Screen

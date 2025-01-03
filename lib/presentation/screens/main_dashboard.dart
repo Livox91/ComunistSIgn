@@ -166,11 +166,9 @@ class _MainDashboardState extends State<MainDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
       endDrawer: buildDrawer(context),
       appBar: _selectedIndex == 0
           ? AppBar(
-              backgroundColor: Colors.transparent,
               elevation: 0,
               iconTheme: const IconThemeData(color: Color(0xFF0077B6)),
             )
@@ -200,7 +198,6 @@ class _MainDashboardState extends State<MainDashboard> {
               _selectedIndex = index;
             });
           },
-          backgroundColor: const Color(0xFFFFFFFF),
           elevation: 0,
           selectedItemColor: const Color(0xFF0077B6),
           unselectedItemColor: Colors.grey.shade400,
@@ -263,20 +260,74 @@ class _MainDashboardState extends State<MainDashboard> {
                 );
               },
             ),
-            const ListTile(
+            ListTile(
               leading: Icon(Icons.help, color: Colors.white),
               title: Text('Help',
                   style: TextStyle(
                       color: Colors.white, fontWeight: FontWeight.w500)),
-            ),
-            const ListTile(
-              leading: Icon(Icons.logout, color: Colors.white),
-              title: Text('Logout',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w500)),
+              onTap: () {
+                _buildMenuItem(
+                  'Help & Support',
+                  Icons.help_outline,
+                  onTap: () {
+                    // Handle help & support
+                  },
+                );
+              },
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildMenuItem(
+    String title,
+    IconData icon, {
+    required VoidCallback onTap,
+    bool isDestructive = false,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 5,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        leading: Container(
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isDestructive
+                ? Colors.red.withOpacity(0.1)
+                : Color(0xFFB2D7F0).withOpacity(0.3),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            icon,
+            color: isDestructive ? Colors.red : Color(0xFF0077B6),
+          ),
+        ),
+        title: Text(
+          title,
+          style: GoogleFonts.montserrat(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: isDestructive ? Colors.red : Colors.black87,
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          size: 16,
+          color: isDestructive ? Colors.red : Colors.grey,
+        ),
+        onTap: onTap,
       ),
     );
   }

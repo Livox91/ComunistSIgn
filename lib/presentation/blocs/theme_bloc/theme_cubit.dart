@@ -4,9 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mcprj/presentation/themes/theme.dart';
 
 class ThemeCubit extends Cubit<ThemeData> {
-  ThemeCubit() : super(darkTheme);
+  ThemeCubit() : super(lightTheme);
 
-  bool _isDarkMode = true;
+  bool _isDarkMode = false;
 
   bool get isDarkMode => _isDarkMode;
 

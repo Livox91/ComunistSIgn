@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mcprj/presentation/blocs/theme_bloc/theme_cubit.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -24,8 +26,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeCubit = context.read<ThemeCubit>();
     return Scaffold(
-      backgroundColor: Color(0xFFFFFFFF),
       appBar: AppBar(
         title: Text(
           'Settings',
@@ -35,7 +37,6 @@ class _SettingsPageState extends State<SettingsPage> {
             color: Color(0xFF0077B6),
           ),
         ),
-        backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: IconThemeData(color: Color(0xFF0077B6)),
       ),
@@ -95,6 +96,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       setState(() {
                         isDarkMode = value;
                       });
+                      themeCubit.toggleTheme();
                     },
                   ),
                 ],
@@ -150,7 +152,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Color(0xFFB2D7F0),
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
             ),
             child: Column(children: children),
@@ -193,7 +195,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   value: option,
                   child: Text(
                     option,
-                    style: GoogleFonts.roboto(color: Colors.black87),
+                    style: GoogleFonts.roboto(color: Colors.blueGrey),
                   ),
                 );
               }).toList(),

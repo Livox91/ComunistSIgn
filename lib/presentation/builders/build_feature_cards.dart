@@ -115,7 +115,6 @@ Widget buildControlButton({
       ),
     ),
     style: ElevatedButton.styleFrom(
-      backgroundColor: onPressed == null ? Colors.grey : color,
       foregroundColor: Colors.white,
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       shape: RoundedRectangleBorder(

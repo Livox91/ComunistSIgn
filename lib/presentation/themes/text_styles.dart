@@ -31,7 +31,7 @@ class BlackMontserratf28wBold extends StatelessWidget {
       style: GoogleFonts.montserrat(
         fontSize: 28,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: const Color(0xFF0077B6),
       ),
     );
   }
@@ -65,7 +65,7 @@ class BlackMontserratf18wBold extends StatelessWidget {
       style: GoogleFonts.montserrat(
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: const Color(0xFF000000),
+        color: const Color(0xFF0077B6),
       ),
     );
   }
@@ -81,7 +81,7 @@ class BlackRobotof13 extends StatelessWidget {
       text ?? "",
       style: GoogleFonts.roboto(
         fontSize: 13,
-        color: const Color(0xFF000000),
+        color: const Color(0xFF0077B6),
       ),
     );
   }
@@ -98,7 +98,7 @@ class BlackMontserratf20wBold extends StatelessWidget {
       style: GoogleFonts.montserrat(
         fontSize: 20,
         fontWeight: FontWeight.bold,
-        color: Colors.black87,
+        color: const Color(0xFF0077B6),
       ),
     );
   }

@@ -29,7 +29,8 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _opacityAnimation;
@@ -106,7 +107,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
+                        color: Colors.grey[600],
                         letterSpacing: 1.2,
                       ),
                     ),
@@ -128,7 +129,7 @@ class OnboardingFlow extends StatefulWidget {
   final String? themeAnimation;
 
   const OnboardingFlow({
-    Key? key, 
+    Key? key,
     this.onComplete,
     this.welcomeAnimation = 'assets/welcome.json',
     this.nameAnimation = 'assets/name.json',
@@ -290,171 +291,163 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
   }
 
   Widget _buildThemeScreen() {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-    child: Column(
-      children: [
-        const SizedBox(height: 60),
-        Text(
-          'Choose Your Theme',
-          style: GoogleFonts.montserrat(  
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF0077B6),  
-          ),
-        ),
-        Text(
-          'Personalize your experience',
-          style: GoogleFonts.montserrat(  
-            fontSize: 16,
-            color: Colors.grey[600],
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 40),
-        Lottie.asset(
-          widget.themeAnimation!,
-          width: 200,
-          height: 200,
-        ),
-        const SizedBox(height: 40),
-        Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF0077B6).withOpacity(0.08),
-                blurRadius: 30,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildThemeOption(false),
-                  _buildThemeOption(true),
-                ],
-              ),
-              const SizedBox(height: 40),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (widget.onComplete != null) {
-                      widget.onComplete!(_nameController.text, _isDarkMode);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0077B6),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 48,
-                      vertical: 20,
-                    ),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: Text(
-                    'Continue',
-                    style: GoogleFonts.montserrat(  // Changed to Montserrat
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-// Updated theme option to match new font
-Widget _buildThemeOption(bool isDark) {
-  final bool isSelected = _isDarkMode == isDark;
-  return GestureDetector(
-    onTap: () => setState(() => _isDarkMode = isDark),
-    child: AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      padding: const EdgeInsets.all(24),
-      width: 140,
-      decoration: BoxDecoration(
-        color: isSelected 
-            ? const Color(0xFF0077B6).withOpacity(0.1)
-            : Colors.grey[100],
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isSelected 
-              ? const Color(0xFF0077B6)
-              : Colors.transparent,
-          width: 2,
-        ),
-      ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
       child: Column(
         children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            padding: const EdgeInsets.all(16),
+          const SizedBox(height: 60),
+          Text(
+            'Choose Your Theme',
+            style: GoogleFonts.montserrat(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF0077B6),
+            ),
+          ),
+          Text(
+            'Personalize your experience',
+            style: GoogleFonts.montserrat(
+              fontSize: 16,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 40),
+          Lottie.asset(
+            widget.themeAnimation!,
+            width: 200,
+            height: 200,
+          ),
+          const SizedBox(height: 40),
+          Container(
+            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: isSelected
-                  ? const Color(0xFF0077B6)
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
-                  color: isSelected
-                      ? const Color(0xFF0077B6).withOpacity(0.3)
-                      : Colors.grey.withOpacity(0.1),
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
+                  color: const Color(0xFF0077B6).withOpacity(0.08),
+                  blurRadius: 30,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
-            child: Icon(
-              isDark ? Icons.dark_mode : Icons.light_mode,
-              size: 32,
-              color: isSelected
-                  ? Colors.white
-                  : const Color(0xFF0077B6),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            isDark ? 'Dark Mode' : 'Light Mode',
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: isSelected
-                  ? const Color(0xFF0077B6)
-                  : Colors.grey[600],
-              fontWeight: isSelected
-                  ? FontWeight.w600
-                  : FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            isDark ? 'Easy on the eyes' : 'Classic look',
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: Colors.grey[500],
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildThemeOption(false),
+                    _buildThemeOption(true),
+                  ],
+                ),
+                const SizedBox(height: 40),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (widget.onComplete != null) {
+                        widget.onComplete!(_nameController.text, _isDarkMode);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0077B6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 48,
+                        vertical: 20,
+                      ),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Text(
+                      'Continue',
+                      style: GoogleFonts.montserrat(
+                        // Changed to Montserrat
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
-    ),
-  );
-}
+    );
+  }
+
+// Updated theme option to match new font
+  Widget _buildThemeOption(bool isDark) {
+    final bool isSelected = _isDarkMode == isDark;
+    return GestureDetector(
+      onTap: () => setState(() => _isDarkMode = isDark),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.all(24),
+        width: 140,
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF0077B6).withOpacity(0.1)
+              : Colors.grey[100],
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF0077B6) : Colors.transparent,
+            width: 2,
+          ),
+        ),
+        child: Column(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: isSelected ? const Color(0xFF0077B6) : Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: isSelected
+                        ? const Color(0xFF0077B6).withOpacity(0.3)
+                        : Colors.grey.withOpacity(0.1),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Icon(
+                isDark ? Icons.dark_mode : Icons.light_mode,
+                size: 32,
+                color: isSelected ? Colors.white : const Color(0xFF0077B6),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              isDark ? 'Dark Mode' : 'Light Mode',
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: isSelected ? const Color(0xFF0077B6) : Colors.grey[600],
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              isDark ? 'Easy on the eyes' : 'Classic look',
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                color: Colors.grey[500],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildDotIndicator(int index) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
@@ -462,7 +455,8 @@ Widget _buildThemeOption(bool isDark) {
       height: 8,
       width: _currentPage == index ? 24 : 8,
       decoration: BoxDecoration(
-        color: _currentPage == index ? const Color(0xFF0077B6) : Colors.grey[300],
+        color:
+            _currentPage == index ? const Color(0xFF0077B6) : Colors.grey[300],
         borderRadius: BorderRadius.circular(4),
       ),
     );
