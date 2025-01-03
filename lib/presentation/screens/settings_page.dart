@@ -116,7 +116,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   _buildActionTile(
                     title: 'Help Center',
                     icon: Icons.help_outline,
-                    onTap: () {},
+                    onTap: () {
+                      _showBugReportDialog();
+                    },
                   ),
                 ],
               ),

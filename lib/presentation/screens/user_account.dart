@@ -136,7 +136,7 @@ class _UserAccountPageState extends State<UserAccountPage> {
                     'Help & Support',
                     Icons.help_outline,
                     onTap: () {
-                      // Handle help & support
+                      _showBugReportDialog();
                     },
                   ),
                   SizedBox(height: 16),
@@ -299,6 +299,65 @@ class _UserAccountPageState extends State<UserAccountPage> {
   void setUserData() async {
     await sharedpref.removeUser();
     await sharedpref.saveUser(widget.userProfile!);
+  }
+
+  void _showBugReportDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            'Report a Bug',
+            style: GoogleFonts.montserrat(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0077B6),
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Please describe the bug you encountered:',
+                style: GoogleFonts.roboto(color: Colors.black87),
+              ),
+              SizedBox(height: 15),
+              TextField(
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Type your description here...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Color(0xFF0077B6)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Submit',
+                style: TextStyle(color: Color(0xFF0077B6)),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showLogoutDialog(BuildContext context) {
