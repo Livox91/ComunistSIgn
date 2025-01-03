@@ -29,6 +29,16 @@ class GuestureService {
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(response.body);
 
+        // Check if response is the detecting message
+        if (jsonResponse is String && jsonResponse.contains("Detecting")) {
+          return GestureResponse(
+            gestures: [],
+            sequence: [],
+            phrase: "Detecting...",
+            error: null,
+          );
+        }
+
         return GestureResponse(
           gestures: jsonResponse.containsKey('gestures')
               ? List<String>.from(jsonResponse['gestures'])
@@ -40,17 +50,21 @@ class GuestureService {
           error: null,
         );
       } else {
+        // Changed to return "Detecting..." instead of error
         return GestureResponse(
           gestures: [],
           sequence: [],
-          error: 'Server error: ${response.statusCode}',
+          phrase: "Detecting...",
+          error: null,
         );
       }
     } catch (e) {
+      // Changed to return "Detecting..." instead of error
       return GestureResponse(
         gestures: [],
         sequence: [],
-        error: 'Error: $e',
+        phrase: "Detecting...",
+        error: null,
       );
     }
   }
