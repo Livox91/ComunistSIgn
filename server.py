@@ -325,7 +325,7 @@ def process_frame():
         return jsonify(response)
         
     except Exception as e:
-        return jsonify({'Detecting....'}), 500
+        return jsonify({'Detecting....'}), 200
 
 @app.route('/process/emotion', methods=['POST'])
 def process_emotion():
@@ -356,7 +356,7 @@ def process_emotion():
             return jsonify({'error': 'Could not determine emotion'}), 400
             
     except Exception as e:
-        return jsonify({'Detecting....'}), 500
+        return jsonify({'Detecting....'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
