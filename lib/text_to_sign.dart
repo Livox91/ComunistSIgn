@@ -271,7 +271,15 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Color(0xFF0077B6)),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            //navigate back
+            Navigator.pop(context);
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/home',
+              (route) => false,
+            );
+          },
         ),
         title: Text(
           'Learn Sign Language',

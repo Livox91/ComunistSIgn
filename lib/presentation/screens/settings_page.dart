@@ -51,7 +51,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 style: GoogleFonts.montserrat(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: const Color(0xFFB2D7F0),
                 ),
               ),
               SizedBox(height: 20),
