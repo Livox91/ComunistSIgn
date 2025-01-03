@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'dart:async';
 
 import 'package:mcprj/data/guesture_service.dart';
+import 'package:mcprj/main.dart';
 
 class TranslateSignToTextScreen extends StatefulWidget {
   @override
@@ -124,10 +125,10 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
 
   void _stopDetection() {
     _detectionTimer?.cancel();
-    setState(() {
-      _isDetecting = false;
-      _translatedText = "Detection stopped. Ready to start again.";
-    });
+
+    _isDetecting = false;
+    _translatedText = "Detection stopped. Ready to start again.";
+    _currentSequence = [];
   }
 
   Widget _buildControlButton({
@@ -244,9 +245,14 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back_ios,
-                              color: Color(0xFF0077B6)),
-                          onPressed: () => Navigator.pop(context),
+                          icon: Icon(
+                            Icons.arrow_back_ios,
+                            color: Color(0xFF0077B6),
+                          ),
+                          onPressed: () {
+                            print('Back to Home Screen');
+                            Navigator.pop(context);
+                          },
                         ),
                         Text(
                           'Sign to Text',

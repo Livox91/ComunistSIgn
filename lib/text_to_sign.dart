@@ -274,11 +274,6 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
           onPressed: () {
             //navigate back
             Navigator.pop(context);
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/home',
-              (route) => false,
-            );
           },
         ),
         title: Text(
