@@ -25,5 +25,31 @@ doc/api/
 
 .flutter-plugins
 .flutter-plugins-dependencies
+
+# --- Project-specific ---
 implementation_plan.md
-__pycache__/
+analysis_results.md
+
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+*.tflite
+
+# --- Android build artifacts ---
+android/app/.cxx/
+android/.gradle/
+android/app/build/
+*.apk
+*.aab
+
+# --- IDE ---
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+devtools_options.yaml
+
