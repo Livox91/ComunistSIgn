@@ -25,4 +25,5 @@ doc/api/
 
 .flutter-plugins
 .flutter-plugins-dependencies
-.implementation_plan
+implementation_plan.md
+__pycache__/
