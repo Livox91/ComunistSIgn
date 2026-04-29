@@ -6,9 +6,12 @@ from flask import Flask
 
 from config import Config
 from preprocessing.pipeline import PreProcessingPipeline
+from preprocessing.histogram_eq import CLAHEProcessor
+from preprocessing.noise_filter import GaussianFilter
 from extraction.landmark_extractor import LandmarkExtractor
 from extraction.normalizer import LandmarkNormalizer
 from classification.heuristic import HeuristicClassifier
+from classification.motion_classifier import MotionClassifier
 from postprocessing.buffer import GestureBuffer
 from postprocessing.phrase_matcher import PhraseMatcher
 from emotion.emotion_detector import EmotionDetector
@@ -19,8 +22,11 @@ def create_app(config: Config = None) -> Flask:
     app = Flask(__name__)
     cfg = config or Config()
 
-    # --- Preprocessing pipeline (empty for now — Phase 1 adds CLAHE + Gaussian) ---
-    app.preprocessor = PreProcessingPipeline(steps=[])
+    # --- Preprocessing pipeline: CLAHE → Gaussian blur ---
+    app.preprocessor = PreProcessingPipeline(steps=[
+        CLAHEProcessor(clip_limit=cfg.CLAHE_CLIP_LIMIT, tile_grid=cfg.CLAHE_TILE_GRID),
+        GaussianFilter(kernel_size=cfg.GAUSSIAN_KERNEL),
+    ])
 
     # --- Landmark extraction ---
     app.landmark_extractor = LandmarkExtractor(
@@ -35,6 +41,9 @@ def create_app(config: Config = None) -> Flask:
 
     # --- Classifier (heuristic for now — Phase 5 swaps to TFLite) ---
     app.classifier = HeuristicClassifier()
+
+    # --- Motion classifier for J/Z (runs alongside static classifier) ---
+    app.motion_classifier = MotionClassifier(history_size=15, min_frames=8)
 
     # --- Postprocessing ---
     app.gesture_buffer = GestureBuffer(
