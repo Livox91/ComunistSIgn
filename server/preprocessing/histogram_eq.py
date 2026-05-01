@@ -18,7 +18,6 @@ class CLAHEProcessor(PreProcessor):
         self.clahe = cv2.createCLAHE(clipLimit=clip_limit, tileGridSize=tile_grid)
 
     def process(self, frame: np.ndarray) -> np.ndarray:
-        # Convert to LAB, apply CLAHE to L channel, convert back
         lab = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
         l, a, b = cv2.split(lab)
         l = self.clahe.apply(l)

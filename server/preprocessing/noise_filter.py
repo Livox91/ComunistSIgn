@@ -13,7 +13,6 @@ from preprocessing.base import PreProcessor
 
 class GaussianFilter(PreProcessor):
     def __init__(self, kernel_size: int = 5):
-        # Kernel must be odd
         if kernel_size % 2 == 0:
             kernel_size += 1
         self.kernel_size = kernel_size
