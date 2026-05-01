@@ -11,6 +11,7 @@ from preprocessing.noise_filter import GaussianFilter
 from extraction.landmark_extractor import LandmarkExtractor
 from extraction.normalizer import LandmarkNormalizer
 from classification.heuristic import HeuristicClassifier
+from classification.tflite_classifier import TFLiteAlphabetClassifier
 from classification.motion_classifier import MotionClassifier
 from postprocessing.buffer import GestureBuffer
 from postprocessing.phrase_matcher import PhraseMatcher

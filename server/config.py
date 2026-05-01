@@ -28,4 +28,6 @@ class Config:
 
     # Classification
     CONFIDENCE_THRESHOLD = 0.6
-    MODEL_PATH = "models/alphabet_model.tflite"
+    USE_TRAINED_CLASSIFIER = True  # False to fall back to the rule-based heuristic
+    ALPHABET_MODEL_PATH = "models/alphabet_model.tflite"
+    ALPHABET_LABEL_ENCODER_PATH = "models/label_encoder.pkl"
