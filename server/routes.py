@@ -49,10 +49,14 @@ def register_routes(app):
                     detected_gestures.append(motion_gesture)
                     app.gesture_buffer.add(motion_gesture)
                 else:
-                    # Fall back to static classifier (A-Y)
+                    # Static classifier (A-Z, plus SPACE / DELETE from the trained model)
                     gesture = app.classifier.classify(landmarks)
-                    if gesture != "Unknown":
-                        detected_gestures.append(gesture)
+                    if gesture in ("Unknown", "NOTHING"):
+                        continue
+                    detected_gestures.append(gesture)
+                    # SPACE and DELETE are UI commands handled by Flutter — don't add
+                    # them to the gesture buffer used for phrase matching.
+                    if gesture not in ("SPACE", "DELETE"):
                         app.gesture_buffer.add(gesture)
 
             # Step 4: Phrase matching

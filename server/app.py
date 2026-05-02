@@ -40,8 +40,21 @@ def create_app(config: Config = None) -> Flask:
     # --- Landmark normalization ---
     app.normalizer = LandmarkNormalizer()
 
-    # --- Classifier (heuristic for now — Phase 5 swaps to TFLite) ---
-    app.classifier = HeuristicClassifier()
+    # --- Classifier: trained TFLite MLP, with heuristic as toggleable fallback ---
+    if cfg.USE_TRAINED_CLASSIFIER:
+        try:
+            app.classifier = TFLiteAlphabetClassifier(
+                model_path=cfg.ALPHABET_MODEL_PATH,
+                label_encoder_path=cfg.ALPHABET_LABEL_ENCODER_PATH,
+                confidence_threshold=cfg.CONFIDENCE_THRESHOLD,
+            )
+            print(f"[app] Loaded TFLite classifier from {cfg.ALPHABET_MODEL_PATH}")
+        except FileNotFoundError as e:
+            print(f"[app] WARNING: {e} — falling back to HeuristicClassifier")
+            app.classifier = HeuristicClassifier()
+    else:
+        app.classifier = HeuristicClassifier()
+        print("[app] Using HeuristicClassifier (USE_TRAINED_CLASSIFIER=False)")
 
     # --- Motion classifier for J/Z (runs alongside static classifier) ---
     app.motion_classifier = MotionClassifier(history_size=15, min_frames=8)
