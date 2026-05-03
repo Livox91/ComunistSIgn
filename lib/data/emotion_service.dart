@@ -1,17 +1,26 @@
-import 'dart:typed_data';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:mcprj/data/server_config.dart';
 import 'package:mcprj/domain/emotion_model.dart';
 
 class EmotionService {
-  static const String _baseUrl = 'http://10.0.2.2:5000';
+  final String baseUrl;
+
+  EmotionService({String? baseUrl}) : baseUrl = baseUrl ?? '';
+
+  static Future<EmotionService> create() async {
+    final url = await ServerConfig.getServerUrl();
+    return EmotionService(baseUrl: url);
+  }
 
   Future<EmotionResponse> sendFrameForEmotion(Uint8List frameBytes) async {
     try {
-      var request = http.MultipartRequest(
+      final request = http.MultipartRequest(
         'POST',
-        Uri.parse('$_baseUrl/process/emotion'),
+        Uri.parse('$baseUrl/process/emotion'),
       );
 
       request.files.add(
@@ -23,27 +32,21 @@ class EmotionService {
         ),
       );
 
-      var streamedResponse = await request.send();
-      var response = await http.Response.fromStream(streamedResponse);
+      final streamed = await request.send();
+      final response = await http.Response.fromStream(streamed);
 
       if (response.statusCode == 200) {
-        var jsonResponse = jsonDecode(response.body);
-
+        final json = jsonDecode(response.body);
         return EmotionResponse(
-          emotion: jsonResponse['emotion'],
-          confidence: jsonResponse['confidence']?.toDouble(),
-          allEmotions: jsonResponse['all_emotions'],
+          emotion: json['emotion'],
+          confidence: (json['confidence'] as num?)?.toDouble(),
+          allEmotions: json['all_emotions'],
           error: null,
         );
-      } else {
-        return EmotionResponse(
-          error: 'Server error: ${response.statusCode}',
-        );
       }
+      return EmotionResponse(error: 'Server error: ${response.statusCode}');
     } catch (e) {
-      return EmotionResponse(
-        error: 'Error: $e',
-      );
+      return EmotionResponse(error: 'Error: $e');
     }
   }
 }

@@ -11,7 +11,9 @@ class Config:
     DEBUG = True
 
     # MediaPipe Hands
-    STATIC_IMAGE_MODE = False
+    # True = treat each frame independently (required for discrete JPEG uploads from phone)
+    # False = tracking mode (only suitable for a continuous video stream)
+    STATIC_IMAGE_MODE = True
     MAX_NUM_HANDS = 2
     MIN_DETECTION_CONFIDENCE = 0.7
     MIN_TRACKING_CONFIDENCE = 0.7

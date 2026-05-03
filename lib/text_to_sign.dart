@@ -17,29 +17,20 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
 
   final Map<String, Map<String, String>> phraseData = {
     'Hello': {
-      'video': 'https://example.com/videos/hello.mp4',
-      'thumbnail': 'https://example.com/thumbnails/hello.jpg',
+      'video': 'assets/hello.mp4',
       'description': 'Wave your hand in greeting',
     },
     'Thank you': {
-      'video': 'https://example.com/videos/thank_you.mp4',
-      'thumbnail': 'https://example.com/thumbnails/thank_you.jpg',
+      'video': 'assets/thank_you.mp4',
       'description': 'Touch your chin and extend hand forward',
     },
     'Please': {
-      'video': 'https://example.com/videos/please.mp4',
-      'thumbnail': 'https://example.com/thumbnails/please.jpg',
+      'video': 'assets/please.mp4',
       'description': 'Rub your chest in circular motion',
     },
     'Sorry': {
-      'video': 'https://example.com/videos/sorry.mp4',
-      'thumbnail': 'https://example.com/thumbnails/sorry.jpg',
+      'video': 'assets/sorry.mp4',
       'description': 'Make a fist and rub it in circular motion',
-    },
-    'Good morning': {
-      'video': 'https://example.com/videos/good_morning.mp4',
-      'thumbnail': 'https://example.com/thumbnails/good_morning.jpg',
-      'description': 'Combine signs for good and morning',
     },
   };
 
@@ -65,7 +56,7 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
         throw Exception('Video URL not found for phrase: $phrase');
       }
 
-      _controller = VideoPlayerController.network(
+      _controller = VideoPlayerController.asset(
         videoUrl,
         videoPlayerOptions: VideoPlayerOptions(
           mixWithOthers: true,
@@ -112,77 +103,74 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Material(
-        elevation: 4,
+        elevation: isSelected ? 6 : 2,
         borderRadius: BorderRadius.circular(20),
-        color: isSelected ? Color(0xFF0077B6) : Colors.white,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: () => _playVideo(phrase),
-          child: Container(
-            padding: EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(
+        color: isSelected ? Color(0xFF0077B6) : Color(0xFFEAF4FB),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isSelected ? Colors.transparent : Color(0xFF0077B6),
+              width: 1.5,
+            ),
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(20),
+            onTap: () => _playVideo(phrase),
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? Colors.white.withValues(alpha: 0.2)
+                          : Color(0xFFB2D7F0),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      Icons.sign_language,
                       color: isSelected ? Colors.white : Color(0xFF0077B6),
-                      width: 2,
+                      size: 30,
                     ),
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(13),
-                    child: CachedNetworkImage(
-                      imageUrl: phraseData[phrase]?['thumbnail'] ?? '',
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        color: Color(0xFFB2D7F0),
-                        child: Icon(
-                          Icons.sign_language,
-                          color: Color(0xFF0077B6),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          phrase,
+                          style: GoogleFonts.montserrat(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected ? Colors.white : Color(0xFF0077B6),
+                          ),
                         ),
-                      ),
-                      errorWidget: (context, url, error) => Icon(
-                        Icons.sign_language,
-                        color: Color(0xFF0077B6),
-                      ),
+                        SizedBox(height: 4),
+                        Text(
+                          description,
+                          style: GoogleFonts.montserrat(
+                            fontSize: 13,
+                            color: isSelected
+                                ? Colors.white.withValues(alpha: 0.85)
+                                : Colors.black87,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        phrase,
-                        style: GoogleFonts.montserrat(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: isSelected ? Colors.white : Colors.black87,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        description,
-                        style: GoogleFonts.montserrat(
-                          fontSize: 14,
-                          color: isSelected ? Colors.white70 : Colors.black54,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                  Icon(
+                    isSelected ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                    color: isSelected ? Colors.white : Color(0xFF0077B6),
+                    size: 32,
                   ),
-                ),
-                Icon(
-                  Icons.play_circle_outline,
-                  color: isSelected ? Colors.white : Color(0xFF0077B6),
-                  size: 32,
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -190,9 +178,9 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
     );
   }
 
-  Widget _buildVideoPlayer() {
+  Widget _buildVideoPlayer(BuildContext context) {
     return Container(
-      height: 350,
+      height: MediaQuery.of(context).size.height * 0.52,
       margin: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.black,
@@ -287,7 +275,7 @@ class _TextToSignScreenState extends State<TextToSignScreen> {
       ),
       body: Column(
         children: [
-          _buildVideoPlayer(),
+          _buildVideoPlayer(context),
           if (_errorMessage.isNotEmpty)
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),

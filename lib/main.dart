@@ -90,6 +90,11 @@ class ExitScreen extends StatelessWidget {
   }
 }
 
+// TEMPORARY: bypasses Firebase auth so the demo can run while the API key issue
+// is being sorted (see Phase 7 of implementation_plan.md). Set to false to
+// restore the real auth flow.
+const bool _kDemoBypassAuth = true;
+
 class Authentication extends StatefulWidget {
   Authentication({super.key});
 
@@ -111,6 +116,15 @@ class _AuthenticationState extends State<Authentication> {
 
   @override
   Widget build(BuildContext context) {
+    if (_kDemoBypassAuth) {
+      return MultiBlocProvider(
+        providers: [
+          BlocProvider<ThemeCubit>(
+              create: (context) => ThemeCubit()..loadTheme()),
+        ],
+        child: MainDashboard(),
+      );
+    }
     checkUserData();
     return MultiBlocProvider(
       providers: [

@@ -108,7 +108,7 @@ def create_app(config: Config = None) -> Flask:
     app.phrase_matcher = PhraseMatcher()
 
     # --- Emotion detection ---
-    app.emotion_detector = EmotionDetector(use_mtcnn=True)
+    app.emotion_detector = EmotionDetector(use_mtcnn=False)
 
     # --- Routes ---
     register_routes(app)

@@ -36,7 +36,7 @@ __pycache__/
 *.pyo
 *.egg-info/
 dist/
-training/data/isolated_signs_processed.pkl
+server/training/data/isolated_signs_processed.pkl
 
 # --- Android build artifacts ---
 android/app/.cxx/
