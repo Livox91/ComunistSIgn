@@ -17,12 +17,14 @@ class GuestureService {
     return GuestureService(baseUrl: url);
   }
 
-  Future<GestureResponse> sendFrameToBackend(Uint8List frameBytes) async {
+  Future<GestureResponse> sendFrameToBackend(Uint8List frameBytes, {bool isFrontCamera = false}) async {
     try {
       final request = http.MultipartRequest(
         'POST',
         Uri.parse('$baseUrl/process'),
       );
+
+      request.fields['front_camera'] = isFrontCamera ? '1' : '0';
 
       request.files.add(
         http.MultipartFile.fromBytes(

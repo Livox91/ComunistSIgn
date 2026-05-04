@@ -10,6 +10,7 @@ import 'package:mcprj/presentation/screens/settings_page.dart';
 import 'package:mcprj/presentation/themes/text_styles.dart';
 import 'translate_sign_to_text.dart';
 import 'emotion_detection.dart';
+import 'isolated_signs_screen.dart';
 import 'search_page.dart';
 import 'user_account.dart';
 import '../../text_to_sign.dart';
@@ -57,6 +58,14 @@ class HorizontalFeatureCards extends StatelessWidget {
             icon: Icons.g_translate,
             color: Color(0xFFB2D7F0),
             destination: TranslateSignToTextScreen(),
+          ),
+          buildFeatureCard(
+            context,
+            title: 'Sign Recognition',
+            description: 'Recognise whole ASL words and phrases.',
+            icon: Icons.waving_hand,
+            color: Color(0xFFB2D7F0),
+            destination: IsolatedSignsScreen(),
           ),
           buildFeatureCard(
             context,

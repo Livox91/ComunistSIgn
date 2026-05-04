@@ -16,12 +16,14 @@ class EmotionService {
     return EmotionService(baseUrl: url);
   }
 
-  Future<EmotionResponse> sendFrameForEmotion(Uint8List frameBytes) async {
+  Future<EmotionResponse> sendFrameForEmotion(Uint8List frameBytes, {bool isFrontCamera = false}) async {
     try {
       final request = http.MultipartRequest(
         'POST',
         Uri.parse('$baseUrl/process/emotion'),
       );
+
+      request.fields['front_camera'] = isFrontCamera ? '1' : '0';
 
       request.files.add(
         http.MultipartFile.fromBytes(

@@ -10,19 +10,25 @@ from flask import jsonify, request
 from PIL import Image, ImageOps
 
 
-def _decode_image(file_bytes: bytes) -> np.ndarray:
+def _decode_image(file_bytes: bytes, flip_horizontal: bool = False) -> np.ndarray:
     """
     Decode a JPEG/PNG from bytes into a BGR numpy array.
-    Uses Pillow to apply EXIF orientation before converting — phones (Android/iOS)
-    store images with an EXIF rotation tag that cv2.imdecode silently ignores,
-    causing MediaPipe to receive a sideways image and fail to detect hands.
+    Uses Pillow to apply EXIF orientation — phones store images with an EXIF rotation
+    tag that cv2.imdecode silently ignores.
+    flip_horizontal should be True for front-camera images: Android saves front-camera
+    JPEGs mirrored (matching the selfie preview), but the model was trained on
+    unmirrored data, so we flip before inference.
     """
     try:
         pil_img = ImageOps.exif_transpose(Image.open(io.BytesIO(file_bytes)))
+        if flip_horizontal:
+            pil_img = ImageOps.mirror(pil_img)
         return cv2.cvtColor(np.array(pil_img.convert("RGB")), cv2.COLOR_RGB2BGR)
     except Exception:
-        # Fall back to plain OpenCV decode if Pillow fails for any reason
-        return cv2.imdecode(np.frombuffer(file_bytes, np.uint8), cv2.IMREAD_COLOR)
+        img = cv2.imdecode(np.frombuffer(file_bytes, np.uint8), cv2.IMREAD_COLOR)
+        if flip_horizontal and img is not None:
+            img = cv2.flip(img, 1)
+        return img
 
 
 def register_routes(app):
@@ -60,8 +66,9 @@ def register_routes(app):
     @app.route("/process", methods=["POST"])
     def process_frame():
         try:
+            flip = request.form.get("front_camera", "0") == "1"
             file = request.files["image"]
-            img = _decode_image(file.read())
+            img = _decode_image(file.read(), flip_horizontal=flip)
 
             # Step 1: DIP preprocessing (CLAHE → Gaussian blur)
             img = app.preprocessor.process(img)
@@ -151,8 +158,9 @@ def register_routes(app):
     @app.route("/process/emotion", methods=["POST"])
     def process_emotion():
         try:
+            flip = request.form.get("front_camera", "0") == "1"
             file = request.files["image"]
-            img = _decode_image(file.read())
+            img = _decode_image(file.read(), flip_horizontal=flip)
 
             if img is None:
                 return jsonify({"error": "Invalid image"}), 400

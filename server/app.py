@@ -91,6 +91,7 @@ def create_app(config: Config = None) -> Flask:
             app.sequence_buffer = SequenceFeatureBuffer(
                 target_len=cfg.PHRASE_TARGET_LEN,
                 feature_dim=cfg.PHRASE_FEATURE_DIM,
+                min_frames=cfg.PHRASE_MIN_FRAMES,
             )
             print(f"[app] Loaded phrase classifier from {cfg.PHRASE_MODEL_PATH}")
         except FileNotFoundError as e:

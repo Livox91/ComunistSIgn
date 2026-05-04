@@ -145,7 +145,7 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
         final Uint8List imageBytes = await picture.readAsBytes();
 
         final EmotionResponse response =
-            await _backendService!.sendFrameForEmotion(imageBytes);
+            await _backendService!.sendFrameForEmotion(imageBytes, isFrontCamera: _isFrontCamera);
         setState(() {
           if (response.error != null) {
             _detectedEmotion = "No face detected";

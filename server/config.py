@@ -40,6 +40,7 @@ class Config:
     PHRASE_LABEL_ENCODER_PATH = "models/phrases_label_encoder.pkl"
     PHRASE_TARGET_LEN = 30
     PHRASE_FEATURE_DIM = 85
+    PHRASE_MIN_FRAMES = 10  # predict once this many frames are buffered (pads to target_len)
     PHRASE_TOP_K = 3
     PHRASE_MIN_CONFIDENCE = 0.30  # below this, drop the prediction from the response
 
