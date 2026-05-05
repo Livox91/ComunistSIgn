@@ -38,11 +38,11 @@ class Config:
     USE_PHRASE_CLASSIFIER = True
     PHRASE_MODEL_PATH = "models/phrases_model.tflite"
     PHRASE_LABEL_ENCODER_PATH = "models/phrases_label_encoder.pkl"
-    PHRASE_TARGET_LEN = 30
-    PHRASE_FEATURE_DIM = 85
-    PHRASE_MIN_FRAMES = 10  # predict once this many frames are buffered (pads to target_len)
+    PHRASE_TARGET_LEN = 45          # retrained with longer sequences
+    PHRASE_FEATURE_DIM = 127        # 85 base + 42 hand-landmark velocity
+    PHRASE_MIN_FRAMES = 12          # predict once this many frames are buffered
     PHRASE_TOP_K = 3
-    PHRASE_MIN_CONFIDENCE = 0.30  # below this, drop the prediction from the response
+    PHRASE_MIN_CONFIDENCE = 0.35    # slightly higher threshold with better model
 
     # Holistic extractor (replaces Hands when phrase recognition is enabled)
     HOLISTIC_MODEL_COMPLEXITY = 1   # 0 fastest, 2 best
