@@ -233,18 +233,23 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
     required IconData icon,
     required String label,
     required Color color,
+    bool compact = false,
   }) {
     return ElevatedButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon),
+      icon: Icon(icon, size: compact ? 18 : 22),
       label: Text(label,
-          style: GoogleFonts.montserrat(fontWeight: FontWeight.bold)),
+          style: GoogleFonts.montserrat(
+              fontWeight: FontWeight.bold,
+              fontSize: compact ? 13 : 14)),
       style: ElevatedButton.styleFrom(
-        backgroundColor: onPressed == null ? Colors.grey : color,
+        backgroundColor: onPressed == null ? Colors.grey.shade600 : color,
         foregroundColor: Colors.white,
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        padding: compact
+            ? EdgeInsets.symmetric(horizontal: 14, vertical: 9)
+            : EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 2,
       ),
     );
   }
@@ -378,7 +383,7 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
 
                 // 4. Frosted glass translation panel
                 Positioned(
-                  left: 16, right: 16, bottom: 96,
+                  left: 16, right: 16, bottom: 158,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(24),
                     child: BackdropFilter(
@@ -422,11 +427,12 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
                       ),
                     ),
                     padding: EdgeInsets.only(
-                        left: 20, right: 20, top: 12,
-                        bottom: MediaQuery.of(context).padding.bottom + 16),
+                        left: 16, right: 16, top: 10,
+                        bottom: MediaQuery.of(context).padding.bottom + 12),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        // Primary controls
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -441,37 +447,44 @@ class _TranslateSignToTextScreenState extends State<TranslateSignToTextScreen>
                                 icon: Icons.delete_sweep, label: 'Clear', color: Color(0xFF0077B6)),
                           ],
                         ),
-                        SizedBox(height: 10),
+                        SizedBox(height: 8),
+                        // Text-editing controls — compact, full width split 50/50
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _buildControlButton(
-                                onPressed: () => setState(() {
-                                  if (_currentWord.isNotEmpty) {
-                                    _completedSentence = '$_completedSentence$_currentWord ';
-                                    _currentWord = '';
-                                  }
-                                  _lastAppended = '';
-                                }),
-                                icon: Icons.space_bar, label: 'Space', color: Colors.blueGrey),
-                            _buildControlButton(
-                                onPressed: () => setState(() {
-                                  if (_currentWord.isNotEmpty) {
-                                    _currentWord = _currentWord.substring(0, _currentWord.length - 1);
-                                  } else if (_completedSentence.isNotEmpty) {
-                                    _completedSentence = _completedSentence.trimRight();
-                                    final lastSpace = _completedSentence.lastIndexOf(' ');
-                                    if (lastSpace >= 0) {
-                                      _currentWord = _completedSentence.substring(lastSpace + 1);
-                                      _completedSentence = _completedSentence.substring(0, lastSpace + 1);
-                                    } else {
-                                      _currentWord = _completedSentence;
-                                      _completedSentence = '';
+                            Expanded(
+                              child: _buildControlButton(
+                                  onPressed: () => setState(() {
+                                    if (_currentWord.isNotEmpty) {
+                                      _completedSentence = '$_completedSentence$_currentWord ';
+                                      _currentWord = '';
                                     }
-                                  }
-                                  _lastAppended = '';
-                                }),
-                                icon: Icons.backspace, label: 'Delete', color: Colors.orange),
+                                    _lastAppended = '';
+                                  }),
+                                  icon: Icons.space_bar, label: 'Space',
+                                  color: Colors.blueGrey, compact: true),
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: _buildControlButton(
+                                  onPressed: () => setState(() {
+                                    if (_currentWord.isNotEmpty) {
+                                      _currentWord = _currentWord.substring(0, _currentWord.length - 1);
+                                    } else if (_completedSentence.isNotEmpty) {
+                                      _completedSentence = _completedSentence.trimRight();
+                                      final lastSpace = _completedSentence.lastIndexOf(' ');
+                                      if (lastSpace >= 0) {
+                                        _currentWord = _completedSentence.substring(lastSpace + 1);
+                                        _completedSentence = _completedSentence.substring(0, lastSpace + 1);
+                                      } else {
+                                        _currentWord = _completedSentence;
+                                        _completedSentence = '';
+                                      }
+                                    }
+                                    _lastAppended = '';
+                                  }),
+                                  icon: Icons.backspace, label: 'Delete',
+                                  color: Colors.orange, compact: true),
+                            ),
                           ],
                         ),
                       ],
