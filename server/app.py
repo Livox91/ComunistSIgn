@@ -6,8 +6,10 @@ from flask import Flask
 
 from config import Config
 from preprocessing.pipeline import PreProcessingPipeline
+from preprocessing.white_balance import WhiteBalanceProcessor
+from preprocessing.gamma import AdaptiveGammaCorrection
 from preprocessing.histogram_eq import CLAHEProcessor
-from preprocessing.noise_filter import GaussianFilter
+from preprocessing.bilateral_filter import BilateralFilterProcessor
 from extraction.landmark_extractor import LandmarkExtractor
 from extraction.holistic_extractor import HolisticExtractor
 from extraction.normalizer import LandmarkNormalizer
@@ -28,10 +30,13 @@ def create_app(config: Config = None) -> Flask:
     cfg = config or Config()
     app.cfg = cfg  # routes read config values from here
 
-    # --- Preprocessing pipeline: CLAHE → Gaussian blur ---
+    # --- Preprocessing pipeline: White Balance → Gamma → CLAHE → Bilateral ---
     app.preprocessor = PreProcessingPipeline(steps=[
+        WhiteBalanceProcessor(),
+        AdaptiveGammaCorrection(target_mean=cfg.GAMMA_TARGET_MEAN),
         CLAHEProcessor(clip_limit=cfg.CLAHE_CLIP_LIMIT, tile_grid=cfg.CLAHE_TILE_GRID),
-        GaussianFilter(kernel_size=cfg.GAUSSIAN_KERNEL),
+        BilateralFilterProcessor(d=cfg.BILATERAL_D, sigma_color=cfg.BILATERAL_SIGMA_COLOR,
+                                 sigma_space=cfg.BILATERAL_SIGMA_SPACE),
     ])
 
     # --- Landmark extraction ---

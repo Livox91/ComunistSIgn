@@ -19,9 +19,12 @@ class Config:
     MIN_TRACKING_CONFIDENCE = 0.7
 
     # Preprocessing
+    GAMMA_TARGET_MEAN = 128.0       # adaptive gamma target luminance (0-255)
     CLAHE_CLIP_LIMIT = 2.0
     CLAHE_TILE_GRID = (8, 8)
-    GAUSSIAN_KERNEL = 5
+    BILATERAL_D = 9                 # bilateral filter neighbourhood diameter
+    BILATERAL_SIGMA_COLOR = 75      # colour similarity range
+    BILATERAL_SIGMA_SPACE = 75      # spatial range
 
     # GestureBuffer
     BUFFER_MAX_SIZE = 15

@@ -1,2 +1,6 @@
 from preprocessing.base import PreProcessor
 from preprocessing.pipeline import PreProcessingPipeline
+from preprocessing.white_balance import WhiteBalanceProcessor
+from preprocessing.gamma import AdaptiveGammaCorrection
+from preprocessing.histogram_eq import CLAHEProcessor
+from preprocessing.bilateral_filter import BilateralFilterProcessor
