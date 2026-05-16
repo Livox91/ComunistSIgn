@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(python -c ' *)",
-      "Bash(dir \"d:\\\\Uni\\\\Projects\\\\3rd semester\\\\mc_prj\\\\ComunistSIgn\\\\server\\\\preprocessing\")"
-    ]
-  }
-}
