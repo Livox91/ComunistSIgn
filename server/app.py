@@ -28,9 +28,7 @@ from routes import register_routes
 def create_app(config: Config = None) -> Flask:
     app = Flask(__name__)
     cfg = config or Config()
-    app.cfg = cfg  # routes read config values from here
-
-    # --- Preprocessing pipeline: White Balance → Gamma → CLAHE → Bilateral ---
+    app.cfg = cfg  
     app.preprocessor = PreProcessingPipeline(steps=[
         WhiteBalanceProcessor(),
         AdaptiveGammaCorrection(target_mean=cfg.GAMMA_TARGET_MEAN),
@@ -39,9 +37,6 @@ def create_app(config: Config = None) -> Flask:
                                  sigma_space=cfg.BILATERAL_SIGMA_SPACE),
     ])
 
-    # --- Landmark extraction ---
-    # If phrase classification is enabled we use Holistic (hands + face + pose).
-    # Otherwise we stick with the lighter Hands-only extractor.
     if cfg.USE_PHRASE_CLASSIFIER:
         app.landmark_extractor = HolisticExtractor(
             static_image_mode=cfg.STATIC_IMAGE_MODE,
@@ -62,11 +57,9 @@ def create_app(config: Config = None) -> Flask:
         app.uses_holistic = False
         print("[app] Using LandmarkExtractor (hands only — phrase classifier disabled)")
 
-    # --- Landmark normalization ---
     app.normalizer = LandmarkNormalizer()
     app.body_frame_normalizer = BodyFrameNormalizer()
 
-    # --- Alphabet classifier (TFLite, with heuristic as toggleable fallback) ---
     if cfg.USE_TRAINED_CLASSIFIER:
         try:
             app.classifier = TFLiteAlphabetClassifier(
@@ -82,7 +75,6 @@ def create_app(config: Config = None) -> Flask:
         app.classifier = HeuristicClassifier()
         print("[app] Using HeuristicClassifier (USE_TRAINED_CLASSIFIER=False)")
 
-    # --- Phrase classifier (LSTM) ---
     app.phrase_classifier = None
     app.sequence_buffer = None
     if cfg.USE_PHRASE_CLASSIFIER:
@@ -102,10 +94,8 @@ def create_app(config: Config = None) -> Flask:
         except FileNotFoundError as e:
             print(f"[app] WARNING: {e} — phrase recognition disabled")
 
-    # --- Motion classifier for J/Z (runs alongside static classifier) ---
     app.motion_classifier = MotionClassifier(history_size=15, min_frames=8)
 
-    # --- Postprocessing ---
     app.gesture_buffer = GestureBuffer(
         max_size=cfg.BUFFER_MAX_SIZE,
         max_age=cfg.BUFFER_MAX_AGE,
@@ -113,10 +103,8 @@ def create_app(config: Config = None) -> Flask:
     )
     app.phrase_matcher = PhraseMatcher()
 
-    # --- Emotion detection ---
     app.emotion_detector = EmotionDetector(use_mtcnn=False)
 
-    # --- Routes ---
     register_routes(app)
 
     return app

@@ -7,6 +7,7 @@ import 'package:mcprj/domain/emotion_model.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:typed_data';
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui' show ImageFilter;
 
 import 'package:mcprj/presentation/builders/build_feature_cards.dart';
@@ -241,7 +242,11 @@ class _EmotionDetectionScreenState extends State<EmotionDetectionScreen>
                 // 1. Full-screen camera
                 Positioned.fill(
                   child: _isCameraInitialized
-                      ? CameraPreview(_cameraController)
+                      ? Transform.scale(
+                          scaleX: Platform.isAndroid && _isFrontCamera ? -1 : 1,
+                          alignment: Alignment.center,
+                          child: CameraPreview(_cameraController),
+                        )
                       : Container(
                           color: Colors.black,
                           child: Center(
